@@ -1,0 +1,68 @@
+.welcome-section {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+.welcome-section h1 {
+    font-size: 32px;
+    color: #000;
+}
+
+/* Header de Logout */
+.top-header {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 20px;
+}
+
+.logout-icon {
+    font-size: 28px;
+    color: #333;
+    text-decoration: none;
+}
+
+/* Container dos Cards */
+.shortcut-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.shortcut-card {
+    background-color: #ffc107;
+    width: 220px;
+    height: 160px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.2s;
+}
+
+.shortcut-card:hover {
+    transform: scale(1.05);
+}
+
+.shortcut-card i {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.shortcut-card span {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+.instruction-text {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    color: #666;
+    line-height: 1.6;
+}

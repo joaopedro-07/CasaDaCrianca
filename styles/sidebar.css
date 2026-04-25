@@ -1,0 +1,89 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #FCC404;
+    color: white;
+    padding: 20px;
+    position: fixed; /* Fixa na esquerda */
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* .sidebar nav a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 15px 0;
+    border-bottom: 1px solid #34495e;
+} */
+
+.sidebar nav a:hover { color: #3498db; }
+
+/* .sidebar nav a.active {
+    background-color: #ffe082;
+    color: #555;
+} */
+
+
+
+
+
+
+
+
+
+.sidebar nav a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: background 0.3s;
+    /* Removido border-bottom daqui */
+}
+
+/* Garante que o fundo mude apenas na página ativa */
+.sidebar nav a.active {
+    background-color: rgba(255, 255, 255, 0.3); /* Um destaque leve */
+    color: #fff;
+}
+
+
+
+
+
+
+
+
+.sidebar nav a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    margin-top: auto; /* Joga para o fim da sidebar */
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 40px;
+    background-color: #f4f7f6;
+    /* background-color: #fdf5e6; Mesmo creme do fundo do login */
+}
