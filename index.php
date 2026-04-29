@@ -49,6 +49,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <button type="submit" class="btn-entrar">Entrar</button>
         </form>
     </div>
-    <h1>teste</h1>
 </body>
 </html>
