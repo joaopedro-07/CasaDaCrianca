@@ -1,62 +1,123 @@
-.welcome-section {
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 60px;
+.body-inicio {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(248, 250, 252);
 }
 
-.welcome-section h1 {
-    font-size: 32px;
-    color: #000;
+.container-geral {
+    margin-left: 80px;
 }
 
-/* Header de Logout */
-.top-header {
+.header-inicio {
+    background-color: #fff;
+    height: 64px;
     display: flex;
-    justify-content: flex-end;
-    padding-bottom: 20px;
-}
-
-/* Container dos Cards */
-.shortcut-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 40px;
-}
-
-.shortcut-card {
-    background-color: #ffc107;
-    width: 220px;
-    height: 160px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    text-decoration: none;
-    color: white;
-    transition: transform 0.2s;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.shortcut-card:hover {
-    transform: scale(1.05);
+.div-search {
+    position: relative;
+    width: 300px;
 }
 
-.shortcut-card i {
-    font-size: 40px;
-    margin-bottom: 15px;
+.icon-search {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
 }
 
-.shortcut-card span {
-    font-weight: bold;
-    font-size: 16px;
-    text-align: center;
+.input-search {
+    background-color: #e8ebee;
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
 }
 
-.instruction-text {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto;
-    color: #666;
-    line-height: 1.6;
+.input-search::placeholder {
+    color: #888;
+    opacity: 1;
+}
+
+.input-search:focus::placeholder {
+    color: #ccc;
+}
+
+.lado-direito-header {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre o sino, a linha e o perfil */
+}
+
+/* Notificação com o pontinho amarelo */
+.notificacao-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    color: #333;
+    cursor: pointer;
+}
+
+.ponto-notificacao {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    background-color: #FCC404;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+/* Linha Vertical */
+.linha-vertical-header {
+    background-color: #e0e0e0; /* Cor mais suave igual à imagem */
+    width: 1px;
+    height: 35px; /* Altura reduzida para ficar elegante */
+}
+
+/* Container do Perfil */
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Círculo do Avatar */
+.avatar-circulo {
+    background-color: #FEF6D8; /* Amarelo bem clarinho de fundo */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Textos (Nome e Cargo) */
+.info-admin {
+    display: flex;
+    flex-direction: column; /* Empilha o nome e o cargo */
+}
+
+.nome-admin {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+.cargo-admin {
+    font-size: 12px;
+    color: #888;
+    font-weight: 400;
 }

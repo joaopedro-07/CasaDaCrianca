@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body class="login-page">
     <div class="login-container">
-        <img src="img/logo-casa-da-crianca.png" alt="Logo">
+        <img src="img/logoCasaDaCrianca.png" alt="Logo Casa da Criança">
         <h2>Entrar na sua conta</h2>
         
         <form action="" method="POST" class="login-form">
