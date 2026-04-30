@@ -7,92 +7,162 @@
 
 .container-logo-sidebar {
     width: 100%;
-    height: 150px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.logo-full, .logo-icon {
+    position: absolute;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.logo-full {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+}
+
+.logo-icon {
+    opacity: 1;
+    visibility: visible;
+    width: 40px;
+}
+
+.sidebar:hover .logo-full {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    width: 150px;
+    margin-top: 100px;
+}
+
+.sidebar:hover .logo-icon {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
 }
 
 .sidebar {
-    width: 250px;
+    width: 80px;
     background-color: #FCC404;
-    padding: 20px;
     position: fixed;
     overflow: hidden;
     height: 100%;
     display: flex;
     flex-direction: column;
     transition: width 0.3s ease;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.sidebar:hover {
+    width: 250px;
 }
 
 .opcao-sidebar {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 10px;
     color: #fff;
     text-decoration: none;
     height: 60px;
-    width: 100%;
     font-weight: bold;
     font-size: 16px;
     padding: 5px;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-    border: 2px solid transparent;
-    border-radius: 10px;
+    transition: all 0.5s ease-in-out;
+    width: 100%;
+}
+
+.nav-sidebar {
+    margin-top: 100px;
+}
+
+.opcao-sidebar p {
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar:hover .opcao-sidebar p {
+    opacity: 1;
+}
+
+.opcao-sidebar svg {
+    min-width: 24px;
+    margin-left: 15px;
 }
 
 .opcao-sidebar.active {
+    border-left: 10px solid #fff;
     background-color: #FDEAA8;
     color: #FCC404;
-    border: 2px solid #fff;
-    border-radius: 10px;
+    transform: scale(1.02);
 }
 
 .opcao-sidebar:hover {
     background-color: #FDEAA8;
     color: #FCC404;
-    border-radius: 10px;
     transform: scale(1.02);
 }
 
-.linha-sidebar {
-    height: 1.7px;
-    width: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-}
-
 .sidebar-footer {
+    width: 100%;
     margin-top: auto;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    padding-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s ease;
 }
 
 .logout-button {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
-    margin-top: 10px;
     color: #fff;
     text-decoration: none;
-    height: 60px;
+    height: 50px;
     width: 100%;
+    padding: 0 15px;
     font-weight: bold;
-    font-size: 16px;
-    padding: 5px;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
+    transition: all 0.4s ease;
     border: 2px solid #fff;
     border-radius: 10px;
+    overflow: hidden;
+}
+
+.logout-button p {
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar:hover .logout-button p {
+    opacity: 1;
+}
+
+.logout-button svg {
+    min-width: 24px;
 }
 
 .logout-button:hover {
     background-color: #FDEAA8;
     color: #FCC404;
     transform: scale(1.02);
+}
+
+.linha-sidebar {
+    height: 2px;
+    width: 100%;
+    background-color: #fff;
+    margin-bottom: 15px;
+    transition: width 0.4s ease;
+}
+
+.sidebar:hover .linha-sidebar {
+    width: 90%;
 }
