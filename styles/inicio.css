@@ -16,12 +16,6 @@
     padding-bottom: 20px;
 }
 
-.logout-icon {
-    font-size: 28px;
-    color: #333;
-    text-decoration: none;
-}
-
 /* Container dos Cards */
 .shortcut-container {
     display: flex;
