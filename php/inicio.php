@@ -27,22 +27,21 @@ if ($stmt) {
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../styles/inicio.css">
+    <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <title>Início - Casa da Criança</title>
 </head>
-<body class="body-inicio">
+<body class="body-padrao">
     <?php include 'sidebar.php'; ?>
     <div class="container-geral">
-        <header class="header-inicio">
+        <header class="header-padrao">
             <div class="div-search">
                 <svg class="icon-search" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
                 <input class="input-search" type="text" placeholder="Pesquisar criança...">
             </div>
             <div class="lado-direito-header">
-                <!-- Sino de Notificação -->
                 <div class="notificacao-container">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                     <span class="ponto-notificacao"></span>
