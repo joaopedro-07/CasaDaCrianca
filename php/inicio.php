@@ -36,6 +36,7 @@ if ($stmt) {
 <body class="body-inicio">
     <?php include 'sidebar.php'; ?>
     <div class="container-geral">
+        <!-- header -->
         <header class="header-inicio">
             <div class="div-search">
                 <svg class="icon-search" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
@@ -63,6 +64,25 @@ if ($stmt) {
                 </div>
             </div>
         </header>
+        <div id="menu-inicio">
+            <h1 id="bem-vindo">Bem-vindo, <?php echo $linha ? $linha['nome'] : 'Admin'; ?>!</h1>
+            <button class="botao-menu-inicio">Vizualizar Tabela 1</button>
+            <button class="botao-menu-inicio">Vizualizar Tabela 2</button>
+            <button class="botao-menu-inicio">Vizualizar Dashboard</button>
+            <p>Use os menus de navegação para acessar as diferentes seções do sistema.</p>
+            <div class="div-demonstra-qtd">
+                <h4>Crianças cadastradas</h4>
+                <h1>0</h1>
+            </div>
+            <div class="div-demonstra-qtd">
+                <h4>Crianças ativas</h4>
+                <h1>0</h1>
+            </div>
+            <div class="div-demonstra-qtd">
+                <h4>Faixa etária</h4>
+                <h1>0</h1>
+            </div>
+        </div>
     </div>
 </body>
 </html>
