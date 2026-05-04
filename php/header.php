@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../styles/style.css">
-</head>
-<body>
+<?php
+$sql = "SELECT id, nome FROM administradores WHERE id = ?";
+$stmt = mysqli_prepare($conn, $sql);
+
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "i", $id_logado);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    $linha = mysqli_fetch_assoc($resultado);
+    }
+?>
     <header class="header-padrao">
             <div class="div-search">
                 <svg class="icon-search" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
@@ -27,12 +28,10 @@
                     </div>
                     <div class="info-admin">
                         <span class="nome-admin">
-                            <?php echo $linha ? $linha['nome'] : 'Admin'; ?>
+                            <?php echo $linha ? htmlspecialchars($linha['nome']) : 'Admin'; ?>
                         </span>
                         <span class="cargo-admin">Gerenciador</span>
                     </div>
                 </div>
             </div>
         </header>
-</body>
-</html>

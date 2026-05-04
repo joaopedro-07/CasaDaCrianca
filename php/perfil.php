@@ -23,13 +23,13 @@ $admin = $resultado->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/perfil.css">
     <title>Perfil de Usuário - Casa da Criança</title>
 </head>
 <body>
+    <?php include 'sidebar.php'; ?>
     <div class="main-wrapper">
-        <?php include 'sidebar.php'; ?>
 
         <main class="content">
             <div class="top-header" style="display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-bottom: 20px;">

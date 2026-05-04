@@ -1,16 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: ../index.php");
-    exit();
-}
-$id_logado = $_SESSION['admin_id'];
-require_once '../conexao.php';
-
-// IMPEDIR CACHE (Coloque isso em todas as páginas do diretório /php)
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
+include 'verificar_login.php';
 
 $sql = "SELECT id, nome FROM administradores WHERE id = ?";
 $stmt = mysqli_prepare($conn, $sql);
@@ -34,9 +23,7 @@ if ($stmt) {
 <body class="body-padrao">
     <?php include 'sidebar.php'; ?>
     <div class="container-geral">
-        <header>
             <?php include 'header.php'; ?>  
-        </header>
         <main class="main-formulario">
             <div class="div-formulario">
                 <h1 class="titulo-sup">Suporte Técnico</h1>
