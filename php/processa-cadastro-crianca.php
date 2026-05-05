@@ -1,136 +1,110 @@
 <?php
 include 'verificar_login.php';
 
-// 1. Identificação da Criança
-$matricula      = strip_tags($_POST['matricula']);
-$nis            = strip_tags($_POST['nis']);
-$nome_crianca   = strip_tags($_POST['nome-crianca']);
-$cpf_crianca    = strip_tags($_POST['cpf-crianca']);
-$data_nasc      = strip_tags($_POST['data-nasc-crianca']);
-$cidade_nasc    = strip_tags($_POST['cidade-nasc-crianca']);
-$data_entrada   = strip_tags($_POST['data-entrada-crianca']);
-$cad_unico      = strip_tags($_POST['cad-unico']);
+// 1. Coleta e Limpeza de Dados
+$matricula     = strip_tags($_POST['matricula'] ?? '');
+$nis           = strip_tags($_POST['nis'] ?? '');
+$nome_crianca  = strip_tags($_POST['nome-crianca'] ?? '');
+$cpf_crianca   = strip_tags($_POST['cpf-crianca'] ?? '');
+$data_nasc     = strip_tags($_POST['data-nasc-crianca'] ?? '');
+$cidade_nasc   = strip_tags($_POST['cidade-nasc-crianca'] ?? '');
+$data_entrada  = strip_tags($_POST['data-entrada-crianca'] ?? '');
 
-// 2. Identificação dos Responsáveis
-$nome_mae         = strip_tags($_POST['nome-mae']);
-$cpf_mae          = strip_tags($_POST['cpf-mae']);
-$nome_pai         = strip_tags($_POST['nome-pai']);
-$cpf_pai          = strip_tags($_POST['cpf-pai']);
-$nome_responsavel = strip_tags($_POST['nome-responsavel']);
-$cpf_responsavel  = strip_tags($_POST['cpf-responsavel']);
+// Sem strip_tags conforme solicitado
+$status        = $_POST['status'] ?? '';
 
-// 3. Endereço
-$rua       = strip_tags($_POST['rua']);
-$numero    = strip_tags($_POST['numero']);
-$bairro    = strip_tags($_POST['bairro']);
-$municipio = strip_tags($_POST['municipio']);
-$uf        = strip_tags($_POST['uf']);
-$cep       = strip_tags($_POST['cep']);
+// Endereço
+$cep           = strip_tags($_POST['cep'] ?? '');
+$rua           = strip_tags($_POST['logradouro'] ?? '');
+$numero        = strip_tags($_POST['numero'] ?? '');
+$bairro        = strip_tags($_POST['bairro'] ?? '');
+$municipio     = strip_tags($_POST['cidade'] ?? '');
+$uf            = strip_tags($_POST['uf'] ?? '');
 
-// 4. Dados Sociais e Status
-$renda          = strip_tags($_POST['renda']);
-$status         = strip_tags($_POST['status']);
-$situacao_risco = strip_tags($_POST['situacao-risco']);
+// Socioeconômico
+$renda          = strip_tags($_POST['renda-familiar'] ?? '');
+$cad_unico      = strip_tags($_POST['cad-unico'] ?? '');
+$situacao_risco = strip_tags($_POST['situacao-risco-social'] ?? '');
+$recebe_benef   = strip_tags($_POST['beneficio'] ?? '');
 
-// 5. Benefícios (Atenção aqui!)
-// Como você tem vários checkboxes com o mesmo nome "beneficio", 
-// no HTML o ideal seria 'name="beneficio[]"'. 
-// Se deixar como está, o PHP pegará apenas o último marcado.
-$beneficio = isset($_POST['beneficio']) ? "Sim" : "Não";
+// Responsáveis
+$tipo_resp = $_POST['tipo_responsavel'];
 
-// 6. Desligamento
-$motivo_desligamento = strip_tags($_POST['motivo-desligamento']);
-
-
-// Inicia transação — garante que tudo é salvo junto ou nada é salvo
 mysqli_begin_transaction($conn);
 
 try {
-    // 1. Insere o usuário
-    $sql = "INSERT INTO criancas (
-            matricula, nis, nome_crianca, cpf_crianca, data_nasc, 
-            cidade_nasc, data_entrada, cad_unico, nome_mae, cpf_mae, 
-            nome_pai, cpf_pai, nome_responsavel, cpf_responsavel, 
-            rua, numero, bairro, municipio, uf, cep, 
-            renda_familiar, status, situacao_risco_social, 
-            motivo_desligamento, motivo_outro
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // PASSO 1: Inserir Endereço
+    $sqlEnd = "INSERT INTO tb_enderecos (cep, logradouro, bairro, cidade, estado, numero) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmtEnd = mysqli_prepare($conn, $sqlEnd);
+    mysqli_stmt_bind_param($stmtEnd, 'ssssss', $cep, $rua, $bairro, $municipio, $uf, $numero);
+    mysqli_stmt_execute($stmtEnd);
+    $idEndereco = mysqli_insert_id($conn);
 
-    $stmt = mysqli_prepare($conn, $sql);
+    // PASSO 2: Inserir Socioeconômico
+    $sqlSoc = "INSERT INTO tb_info_socioeconomica (renda_familiar, cad_unico, recebe_beneficio, situacao_risco_social) VALUES (?, ?, ?, ?)";
+    $stmtSoc = mysqli_prepare($conn, $sqlSoc);
+    mysqli_stmt_bind_param($stmtSoc, 'dsss', $renda, $cad_unico, $recebe_benef, $situacao_risco);
+    mysqli_stmt_execute($stmtSoc);
+    $idFamilia = mysqli_insert_id($conn);
 
+    // PASSO 3: Inserir Adultos (Mãe e Pai)
+    // Função auxiliar para inserir adulto e retornar ID
+    function inserirAdulto($conexao, $nome, $cpf, $tel)
+    {
+        $sql = "INSERT INTO tb_adultos (nome, cpf, telefone) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($conexao, $sql);
+        mysqli_stmt_bind_param($stmt, 'sss', $nome, $cpf, $tel);
+        mysqli_stmt_execute($stmt);
+        return mysqli_insert_id($conexao);
+    }
+
+    $idMae = inserirAdulto($conn, $_POST['nome-mae'], $_POST['cpf-mae'], $_POST['tel-mae']);
+    $idPai = inserirAdulto($conn, $_POST['nome-pai'], $_POST['cpf-pai'], $_POST['tel-pai']);
+
+    // Lógica do Responsável Legal
+    if ($tipo_resp === 'mae') {
+        $idResponsavel = $idMae;
+    } elseif ($tipo_resp === 'pai') {
+        $idResponsavel = $idPai;
+    } else {
+        $idResponsavel = inserirAdulto($conn, $_POST['nome-responsavel'], $_POST['cpf-responsavel'], $_POST['tel-responsavel']);
+    }
+
+    // PASSO 4: Inserir Criança (Unindo todos os IDs)
+    $sqlCrianca = "INSERT INTO tb_criancas 
+        (matricula, nis, cpf, nome, data_nasc, cidade_nasc, status, data_entrada, pai_id, mae_id, responsavel_legal_id, endereco_id, familia_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmtCrianca = mysqli_prepare($conn, $sqlCrianca);
     mysqli_stmt_bind_param(
-        $stmt,
-        'sssssssssssssssssssssssss',
+        $stmtCrianca,
+        'ssssssssiiiii',
         $matricula,
         $nis,
-        $nome_crianca,
         $cpf_crianca,
+        $nome_crianca,
         $data_nasc,
         $cidade_nasc,
-        $data_entrada,
-        $cad_unico,
-        $nome_mae,
-        $cpf_mae,
-        $nome_pai,
-        $cpf_pai,
-        $nome_responsavel,
-        $cpf_responsavel,
-        $rua,
-        $numero,
-        $bairro,
-        $municipio,
-        $uf,
-        $cep,
-        $renda,
         $status,
-        $situacao_risco,
-        $motivo_desligamento,
-        $motivo_outro
+        $data_entrada,
+        $idPai,
+        $idMae,
+        $idResponsavel,
+        $idEndereco,
+        $idFamilia
     );
-    mysqli_stmt_execute($stmt);
+    mysqli_stmt_execute($stmtCrianca);
+    $idCrianca = mysqli_insert_id($conn);
 
-    // 2. Pega o ID gerado
-    $idUsuario = mysqli_insert_id($conn);
+    // PASSO 5: Histórico de Status
+    $sqlHis = "INSERT INTO tb_historico_status (crianca_id, status_anterior, status_novo, observacao) VALUES (?, 'pendente', ?, 'Cadastro inicial')";
+    $stmtHis = mysqli_prepare($conn, $sqlHis);
+    mysqli_stmt_bind_param($stmtHis, 'is', $idCrianca, $status);
+    mysqli_stmt_execute($stmtHis);
 
-    $beneficios_marcados = isset($_POST['beneficio']) ? $_POST['beneficio'] : [];
-
-    // Se o rádio do CadÚnico for "Sim", adicionamos manualmente ao array
-    if (isset($_POST['cad-unico']) && $_POST['cad-unico'] === 'sim-cadUnico') {
-        $beneficios_marcados[] = 'CadÚnico';
-    }
-
-    // 3. Verifica se o array não está vazio para começar a inserir
-    if (!empty($beneficios_marcados)) {
-        $stmtBeneficio = mysqli_prepare($conn, "
-        INSERT INTO criancas_beneficios (crianca_id, beneficio) VALUES (?, ?)
-    ");
-
-        // Lembre-se: $idUsuario deve ser o resultado de mysqli_insert_id($conn)
-        // obtido logo após o insert da tabela 'criancas'
-        foreach ($beneficios_marcados as $beneficio) {
-            // IMPORTANTE: O valor deve ser EXATAMENTE igual ao que está no ENUM do banco
-            mysqli_stmt_bind_param($stmtBeneficio, 'is', $idUsuario, $beneficio);
-
-            if (!mysqli_stmt_execute($stmtBeneficio)) {
-                // Caso dê erro (ex: valor não existe no ENUM)
-                echo "Erro ao inserir benefício ($beneficio): " . mysqli_stmt_error($stmtBeneficio);
-            }
-        }
-    }
-
-    // 4. Insere no histórico de status
-    $stmtHistorico = mysqli_prepare($conn, "
-        INSERT INTO criancas_status_historico (crianca_id, status) VALUES (?, ?)
-    ");
-    mysqli_stmt_bind_param($stmtHistorico, 'is', $idUsuario, $status);
-    mysqli_stmt_execute($stmtHistorico);
-
-    // Confirma tudo
     mysqli_commit($conn);
-
-    echo json_encode(['sucesso' => true, 'id' => $idUsuario]);
+    echo json_encode(['sucesso' => true, 'id' => $idCrianca]);
 } catch (Exception $e) {
-    // Se qualquer coisa falhar, desfaz tudo
     mysqli_rollback($conn);
     echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
 }

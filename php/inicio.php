@@ -29,110 +29,261 @@ include 'verificar_login.php';
             <button class="btn-novo" onclick="document.getElementById('overlay').classList.add('open')">+ Adicionar Criança</button>
           </div>
 
-          <div class="overlay" id="overlay" onclick="fecharModal(event)">
-            <div class="modal" onclick="event.stopPropagation()">
-              <div class="modal-header">
-                <h2>Cadastrar usuário</h2>
-                <button class="btn-fechar" onclick="document.getElementById('overlay').classList.remove('open')">×</button>
-              </div>
-
-                <form action="processa-cadastro-crianca.php" method="POST" class="form-grid">
-
-                  <div class="form-group">
-                    <div class="section-label">Identificação</div>
-                    <label class="label-form-cadastro">Nº Matrícula</label><input name="matricula" class="input-form-cadastro" type="text" placeholder="Digite o nº da matrícula">
-                    <label class="label-form-cadastro">NIS (Número de Identificação Social)</label><input name="nis" class="input-form-cadastro" type="text" placeholder="Digite o NIS">
-                    <label class="label-form-cadastro">Nome da Criança</label><input name="nome-crianca" class="input-form-cadastro" type="text" placeholder="Digite o nome da criança">
-                    <label class="label-form-cadastro">CPF da Criança</label><input name="cpf-crianca" class="input-form-cadastro" type="text" placeholder="Digite o CPF da criança">
-                    <label class="label-form-cadastro">Data de Nascimento da Criança</label><input name="data-nasc-crianca" class="input-form-cadastro" type="date">
-                    <label class="label-form-cadastro">Cidade de Nascimento da Criança</label><input name="cidade-nasc-crianca" class="input-form-cadastro" type="text" placeholder="Digite a cidade em que a criança nasceu">
-                    <label class="label-form-cadastro">Data de entrada da Criança</label><input name="data-entrada-crianca" class="input-form-cadastro" type="date">
+          <form action="processa-cadastro-crianca.php">
+            <div class="overlay" id="overlay">
+              <div class="modal">
+                <div class="modal-header">
+                  <div class="modal-header-left">
+                    <div class="modal-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <line x1="19" y1="8" x2="19" y2="14" />
+                        <line x1="22" y1="11" x2="16" y2="11" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2>Cadastrar usuário</h2>
+                      <p class="modal-header-sub">Preencha todos os campos obrigatórios</p>
+                    </div>
                   </div>
-                
-                  <div class="form-group">
-                    <div class="section-label">Identificação Responsáveis</div>
-                    <label class="label-form-cadastro">Nome da Mãe</label><input name="nome-mae" class="input-form-cadastro" type="text" placeholder="Digite o nome da Mãe">
-                    <label class="label-form-cadastro">CPF da Mãe</label><input name="cpf-mae" class="input-form-cadastro" type="text" placeholder="Digite o CPF da Mãe">
-                    <label class="label-form-cadastro">Nome do Pai</label><input name="nome-pai" class="input-form-cadastro" type="text" placeholder="Digite o nome do Pai">
-                    <label class="label-form-cadastro">CPF do Pai</label><input name="cpf-pai" class="input-form-cadastro" type="text" placeholder="Digite o CPF do Pai">
-                    <label class="label-form-cadastro">Nome do Responsável</label><input name="nome-responsavel" class="input-form-cadastro" type="text" placeholder="Digite o nome do Responsável">
-                    <label class="label-form-cadastro">CPF do Responsável</label><input name="cpf-responsavel" class="input-form-cadastro" type="text" placeholder="Digite o CPF do Responsável">
+                  <button class="btn-fechar" onclick="document.getElementById('overlay').classList.remove('open')">×</button>
+                </div>
+  
+                <div class="form-body">
+                  <div class="steps-bar">
+                    <button class="step-tab active" onclick="goStep(0)">1 · Identificação</button>
+                    <button class="step-tab" onclick="goStep(1)">2 · Responsáveis</button>
+                    <button class="step-tab" onclick="goStep(2)">3 · Endereço</button>
+                    <button class="step-tab" onclick="goStep(3)">4 · Socioeconômico</button>
                   </div>
-                  
-                  <div class="form-group">
-                    <div class="section-label">Endereço</div>
-                    <label class="label-form-cadastro">Rua</label><input name="rua" class="input-form-cadastro" type="text" placeholder="Digite o nome da rua">
-                    <label class="label-form-cadastro">Número</label><input name="numero" class="input-form-cadastro" type="text" placeholder="Digite o número da residência">
-                    <label class="label-form-cadastro">Bairro</label><input name="bairro" class="input-form-cadastro" type="text" placeholder="Digite o nome do bairro">
-                    <label class="label-form-cadastro">Município</label><input name="municipio" class="input-form-cadastro" type="text" placeholder="Digite o nome do município">
-                    <label class="label-form-cadastro">UF</label><input name="uf" class="input-form-cadastro" type="text" placeholder="Digite o nome do estado" maxlength="2">
-                    <label class="label-form-cadastro">CEP</label><input name="cep" class="input-form-cadastro" type="text" placeholder="Digite o CEP">
+  
+                  <!-- Step 1 -->
+                  <div class="form-section active" id="step-0">
+                    <p class="section-title">Identificação da criança</p>
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Nº Matrícula</label>
+                        <input name="matricula" class="input-form-cadastro" type="number" placeholder="Ex: 100023" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">NIS</label>
+                        <input name="nis" class="input-form-cadastro" type="text" placeholder="Número de Identificação Social" required>
+                      </div>
+                    </div>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Nome da criança</label>
+                        <input name="nome-crianca" class="input-form-cadastro" type="text" placeholder="Nome completo" required>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">CPF da criança</label>
+                        <input name="cpf-crianca" class="input-form-cadastro" type="text" placeholder="000.000.000-00" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Data de nascimento</label>
+                        <input name="data-nasc-crianca" class="input-form-cadastro" type="date" required>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Cidade de nascimento</label>
+                        <input name="cidade-nasc-crianca" class="input-form-cadastro" type="text" placeholder="Município" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Data de entrada</label>
+                        <input name="data-entrada-crianca" class="input-form-cadastro" type="date" required>
+                      </div>
+                    </div>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Status</label>
+                        <select name="status" class="input-form-cadastro">
+                          <option value="pendente">— selecione —</option>
+                          <option value="ativo">Ativo</option>
+                          <option value="inativo">Inativo</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div class="form-group">
-                    <div class="section-label">Dados sociais</div>
-                    <label class="label-form-cadastro">Renda familiar (R$)</label><input name="renda" class="input-form-cadastro" type="number" placeholder="0,00">
-                    <label class="label-form-cadastro">Status</label>
-                      <select name="status" class="input-form-cadastro">
-                        <option>pendente</option>
-                        <option>ativo</option>
-                        <option>inativo</option>
-                      </select>
-                    <label class="label-form-cadastro">Situação de risco social</label>
-                      <select name="situacao-risco" class="input-form-cadastro">
-                        <option value="">— selecione —</option>
-                        <option>I - Crianças e adolescentes com medida de proteção</option>
-                        <option>II - Trabalho infantil</option>
-                        <option>III - Vivência de violência ou negligência</option>
-                        <option>IV - Abuso e exploração sexual</option>
-                        <option>V - Crianças e adolescentes fora da escola</option>
-                        <option>VI - Jovens egressos de medida socioeducativa</option>
-                        <option>VII - Pessoas com deficiência (PcD)</option>
-                        <option>VIII - Idosos em situação de fragilidade</option>
-                        <option>IX - Famílias beneficiárias de transferência de renda</option>
-                        <option>X - Pessoas em situação de rua</option>
-                        <option>XI - Vulnerabilidade por estigmatização</option>
-                      </select>
-                  </div>
-
-                  <div class="form-group">
-                    <div class="section-label">Possui CadÚnico?</div>
-                    <input type="radio" id="sim-cadUnico" name="cad-unico" value="sim-cadUnico">
-                    <label for="sim-cadUnico">Sim</label>
-                    <input type="radio" id="nao-cadUnico" name="cad-unico" value="nao-cadUnico">
-                    <label for="nao-cadUnico">Não</label>
-                  </div>
-
-                  <div class="form-group">
-                    <div class="section-label">Benefícios recebidos</div>
-                    <div class="beneficios-grid">
-                      <label class="beneficio-item"><input value="Bolsa Família" name="beneficio[]" type="checkbox"> Bolsa Família</label>
-                      <label class="beneficio-item"><input value="BPC" name="beneficio[]" type="checkbox"> BPC</label>
-                      <label class="beneficio-item"><input value="Auxílio Brasil" name="beneficio[]" type="checkbox"> Auxílio Brasil</label>
-                      <label class="beneficio-item"><input value="Outro" name="beneficio[]" type="checkbox"> Outro</label>
+  
+                  <!-- Step 2 -->
+                  <div class="form-section" id="step-1">
+                    <p class="section-title">Vínculo de responsabilidade</p>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Responsável legal</label>
+                        <select name="tipo_responsavel" id="tipo_responsavel" class="input-form-cadastro" required onchange="toggleResponsavel()">
+                          <option value="" disabled selected>Selecione uma opção</option>
+                          <option value="mae">Mãe</option>
+                          <option value="pai">Pai</option>
+                          <option value="outro">Outro responsável legal</option>
+                        </select>
+                      </div>
                     </div>
   
-                    <label class="label-form-cadastro">Motivo de desligamento</label>
-                      <select name="motivo-desligamento" class="input-form-cadastro" id="select-motivo" onchange="toggleMotivo()">
-                        <option value="">— selecione —</option>
-                        <option>Atingiu o limite de idade</option>
-                        <option>Mudança de município</option>
-                        <option>Outro</option>
-                      </select>
-                    <label class="label-form-cadastro">Descreva o motivo</label><input name="motivo-desligamento" class="input-form-cadastro" type="text"
-                        placeholder="Digite o motivo...">
+                    <hr class="divider">
+                    <p class="section-title">Identificação da mãe</p>
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Nome da mãe</label>
+                        <input name="nome-mae" id="nome-mae" class="input-form-cadastro" type="text" placeholder="Nome completo" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">CPF da mãe</label>
+                        <input name="cpf-mae" id="cpf-mae" class="input-form-cadastro" type="text" placeholder="000.000.000-00" required>
+                      </div>
+                    </div>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Telefone da mãe</label>
+                        <input name="tel-mae" id="tel-mae" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000">
+                      </div>
+                    </div>
+  
+                    <hr class="divider">
+                    <p class="section-title">Identificação do pai</p>
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Nome do pai</label>
+                        <input name="nome-pai" id="nome-pai" class="input-form-cadastro" type="text" placeholder="Nome completo" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">CPF do pai</label>
+                        <input name="cpf-pai" id="cpf-pai" class="input-form-cadastro" type="text" placeholder="000.000.000-00" required>
+                      </div>
+                    </div>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Telefone do pai</label>
+                        <input name="tel-pai" id="tel-pai" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000">
+                      </div>
+                    </div>
+  
+                    <div id="secao-responsavel-extra" class="secao-responsavel-extra">
+                      <p class="section-title" style="margin-top: 0;"><span class="badge-outro">Outro</span> Dados do responsável legal</p>
+                      <div class="form-row">
+                        <div class="form-field">
+                          <label class="label-form-cadastro">Nome do responsável</label>
+                          <input name="nome-responsavel" id="nome-responsavel" class="input-form-cadastro" type="text" placeholder="Nome completo">
+                        </div>
+                        <div class="form-field">
+                          <label class="label-form-cadastro">CPF do responsável</label>
+                          <input name="cpf-responsavel" id="cpf-responsavel" class="input-form-cadastro" type="text" placeholder="000.000.000-00">
+                        </div>
+                      </div>
+                      <div class="form-row col-1">
+                        <div class="form-field">
+                          <label class="label-form-cadastro">Telefone do responsável</label>
+                          <input name="tel-responsavel" id="tel-responsavel" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000">
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                <div class="modal-footer">
-                  <button class="btn-cancelar"
-                    onclick="document.getElementById('overlay').classList.remove('open')">Cancelar</button>
+  
+                  <!-- Step 3 -->
+                  <div class="form-section" id="step-2">
+                    <p class="section-title">Endereço residencial</p>
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">CEP</label>
+                        <input name="cep" class="input-form-cadastro" type="text" placeholder="00000-000" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Número</label>
+                        <input name="numero" class="input-form-cadastro" type="text" placeholder="Nº" required>
+                      </div>
+                    </div>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Rua / Logradouro</label>
+                        <input name="logradouro" class="input-form-cadastro" type="text" placeholder="Nome da rua, avenida..." required>
+                      </div>
+                    </div>
+                    <div class="form-row col-3">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Bairro</label>
+                        <input name="bairro" class="input-form-cadastro" type="text" placeholder="Bairro" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Cidade</label>
+                        <input name="cidade" class="input-form-cadastro" type="text" placeholder="Município" required>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">UF</label>
+                        <input name="uf" class="input-form-cadastro" type="text" placeholder="SP" maxlength="2" required>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Step 4 -->
+                  <div class="form-section" id="step-3">
+                    <p class="section-title">Informação socioeconômica</p>
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Renda familiar (R$)</label>
+                        <input name="renda-familiar" class="input-form-cadastro" type="number" placeholder="0,00" required>
+                        <p class="field-hint">Informe o valor mensal total da família</p>
+                      </div>
+                    </div>
+  
+                    <div class="form-row">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Possui CadÚnico?</label>
+                        <div class="radio-group">
+                          <label class="radio-label"><input type="radio" name="cad-unico" value="Sim"> Sim</label>
+                          <label class="radio-label"><input type="radio" name="cad-unico" value="Não"> Não</label>
+                        </div>
+                      </div>
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Recebe benefício?</label>
+                        <div class="radio-group">
+                          <label class="radio-label"><input type="radio" name="beneficio" value="Sim"> Sim</label>
+                          <label class="radio-label"><input type="radio" name="beneficio" value="Não"> Não</label>
+                        </div>
+                      </div>
+                    </div>
+  
+                    <div class="form-row col-1">
+                      <div class="form-field">
+                        <label class="label-form-cadastro">Situação de risco social</label>
+                        <select name="situacao-risco-social" class="input-form-cadastro">
+                          <option value="">— selecione —</option>
+                          <option>I - Crianças e adolescentes com medida de proteção</option>
+                          <option>II - Trabalho infantil</option>
+                          <option>III - Vivência de violência ou negligência</option>
+                          <option>IV - Abuso e exploração sexual</option>
+                          <option>V - Crianças e adolescentes fora da escola</option>
+                          <option>VI - Jovens egressos de medida socioeducativa</option>
+                          <option>VII - Pessoas com deficiência (PcD)</option>
+                          <option>VIII - Idosos em situação de fragilidade</option>
+                          <option>IX - Famílias beneficiárias de transferência de renda</option>
+                          <option>X - Pessoas em situação de rua</option>
+                          <option>XI - Vulnerabilidade por estigmatização</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+  
                 <div class="modal-footer">
-                  <button class="btn-salvar">Salvar usuário</button>
+                  <span class="footer-left" id="step-indicator">Passo 1 de 4</span>
+                  <div class="footer-right">
+                    <button class="btn-cancelar" id="btn-back" onclick="navStep(-1)" style="display:none">← Voltar</button>
+                    <button class="btn-nav" id="btn-next" onclick="navStep(1)">Próximo →</button>
+                    <button type="submit" class="btn-salvar" id="btn-salvar" style="display:none">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Salvar usuário
+                    </button>
+                  </div>
                 </div>
-              </form>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </main>
