@@ -481,15 +481,7 @@
   color: #1E40AF;
 }
 
-.header-lista {
-  display: flex;
-  justify-content: space-between;
-}
 
-.parte-esquerda-header-lista {
-  display: flex;
-  gap: 12px;
-}
 
 .button-ver-renda-beneficios {
   text-decoration: none;
@@ -506,36 +498,14 @@
 .button-ver-renda-beneficios:hover {
   background: #e5e7eb;
 }
-
-.parte-esquerda-header-lista button {
-  padding: 10px 18px;
-  border-radius: 12px;
-  background: #facc15;
-  color: #1f2937;
-  font-size: 14px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.parte-esquerda-header-lista button:hover {
-  background: #eab308;
-}
-
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  inset: 0;
   display: none;
   justify-content: center;
   align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
 }
 
 .overlay.open {
@@ -860,4 +830,110 @@ select.input-form-cadastro {
   background: currentColor;
   display: inline-block;
   margin-right: 4px;
+}
+/* ---------- Página inicial ---------- */
+.main-inicio {
+  min-height: calc(100vh - 64px);
+  background-color: #f8fafc;
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ---------- Cards no topo (responsivo) ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid #f1f1f1;
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  transition: box-shadow 0.15s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.stat-card__body  { display: flex; flex-direction: column; gap: 2px; }
+.stat-card__label { font-size: 13px; font-weight: 500; color: #6b7280; }
+.stat-card__value { font-size: 28px; font-weight: 700; color: #111827; line-height: 1.15; margin: 4px 0; }
+.stat-card__sub   { font-size: 12px; color: #9ca3af; }
+
+.stat-card__icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.stat-card__icon--amber { background: #FEF3C7; color: #92400E; }
+.stat-card__icon--green { background: #D1FAE5; color: #065F46; }
+.stat-card__icon--blue  { background: #DBEAFE; color: #1E40AF; }
+
+/* ---------- Barra de ações alinhada à direita ---------- */
+.actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.button-ver-renda-beneficios {
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid #e5e7eb;
+  transition: 0.2s;
+}
+.button-ver-renda-beneficios:hover { background: #e5e7eb; }
+
+.btn-novo {
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: #facc15;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 2px 6px rgba(252, 196, 4, 0.35);
+}
+.btn-novo:hover { background: #eab308; }
+
+@media (max-width: 640px) {
+  .actions-bar { justify-content: stretch; }
+  .actions-bar > * { flex: 1; text-align: center; }
+}
+
+/* ---------- Lista de crianças ocupa 100% ---------- */
+.lista-criancas {
+  width: 100%;
+  max-width: 100%;
 }

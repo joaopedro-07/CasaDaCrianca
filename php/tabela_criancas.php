@@ -1,0 +1,278 @@
+<?php
+
+if (!isset($pdo) && !isset($conn)) {
+    @include __DIR__ . '/conexao.php';
+}
+
+$criancas = [];
+
+$sql = "
+    SELECT
+        c.id,
+        c.matricula,
+        c.nis,
+        c.cpf                         AS cpf_crianca,
+        c.nome                        AS nome_crianca,
+        c.status,
+        c.data_entrada                AS data_entrada_crianca,
+        c.data_nasc                   AS data_nasc_crianca,
+        c.cidade_nasc                 AS cidade_nasc_crianca,
+
+        /* Responsáveis (JOIN em tb_adultos 3x) */
+        mae.nome                      AS nome_mae,
+        mae.cpf                       AS cpf_mae,
+        mae.telefone                  AS tel_mae,
+
+        pai.nome                      AS nome_pai,
+        pai.cpf                       AS cpf_pai,
+        pai.telefone                  AS tel_pai,
+
+        resp.nome                     AS nome_responsavel,
+        resp.cpf                      AS cpf_responsavel,
+        resp.telefone                 AS tel_responsavel,
+
+        CASE
+            WHEN c.responsavel_legal_id = c.mae_id THEN 'mae'
+            WHEN c.responsavel_legal_id = c.pai_id THEN 'pai'
+            WHEN c.responsavel_legal_id IS NOT NULL THEN 'outro'
+            ELSE NULL
+        END                           AS tipo_responsavel,
+
+        /* Endereço */
+        e.cep,
+        e.logradouro,
+        e.numero,
+        e.complemento,
+        e.bairro,
+        e.cidade,
+        e.estado                      AS uf,
+
+        /* Socioeconômico */
+        s.renda_familiar,
+        s.cad_unico,
+        s.recebe_beneficio            AS beneficio,
+        s.situacao_risco_social,
+
+        /* Último histórico de status (subquery) */
+        (SELECT h.data_mudanca FROM tb_historico_status h
+            WHERE h.crianca_id = c.id
+            ORDER BY h.data_mudanca DESC LIMIT 1)            AS ultimo_status_data,
+        (SELECT h.motivo_desligamento FROM tb_historico_status h
+            WHERE h.crianca_id = c.id
+            ORDER BY h.data_mudanca DESC LIMIT 1)            AS ultimo_motivo
+
+    FROM tb_criancas c
+    LEFT JOIN tb_adultos mae          ON mae.id  = c.mae_id
+    LEFT JOIN tb_adultos pai          ON pai.id  = c.pai_id
+    LEFT JOIN tb_adultos resp         ON resp.id = c.responsavel_legal_id
+    LEFT JOIN tb_enderecos e          ON e.id    = c.endereco_id
+    LEFT JOIN tb_info_socioeconomica s ON s.id   = c.familia_id
+    ORDER BY c.nome ASC
+";
+
+try {
+    if (isset($pdo)) {
+        $criancas = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    } elseif (isset($conn)) {
+        $res = mysqli_query($conn, $sql);
+        if ($res) {
+            while ($row = mysqli_fetch_assoc($res)) $criancas[] = $row;
+        }
+    }
+} catch (Throwable $e) {
+    $criancas = [];
+}
+
+/* ---------- Definição central das colunas ---------- */
+$colunas = [
+    // Identificação
+    'matricula'             => ['label' => 'Nº Matrícula',           'cat' => 'Identificação',  'default' => true],
+    'nis'                   => ['label' => 'NIS',                    'cat' => 'Identificação',  'default' => true],
+    'nome_crianca'          => ['label' => 'Nome da criança',        'cat' => 'Identificação',  'default' => true],
+    'cpf_crianca'           => ['label' => 'CPF da criança',         'cat' => 'Identificação',  'default' => true],
+    'data_nasc_crianca'     => ['label' => 'Data de nascimento',     'cat' => 'Identificação',  'default' => true],
+    'cidade_nasc_crianca'   => ['label' => 'Cidade de nascimento',   'cat' => 'Identificação',  'default' => false],
+    'data_entrada_crianca'  => ['label' => 'Data de entrada',        'cat' => 'Identificação',  'default' => true],
+    'status'                => ['label' => 'Status',                 'cat' => 'Identificação',  'default' => true],
+
+    // Responsáveis
+    'tipo_responsavel'      => ['label' => 'Tipo de responsável',    'cat' => 'Responsáveis',   'default' => true],
+    'nome_mae'              => ['label' => 'Nome da mãe',            'cat' => 'Responsáveis',   'default' => true],
+    'cpf_mae'               => ['label' => 'CPF da mãe',             'cat' => 'Responsáveis',   'default' => false],
+    'tel_mae'               => ['label' => 'Telefone da mãe',        'cat' => 'Responsáveis',   'default' => false],
+    'nome_pai'              => ['label' => 'Nome do pai',            'cat' => 'Responsáveis',   'default' => true],
+    'cpf_pai'               => ['label' => 'CPF do pai',             'cat' => 'Responsáveis',   'default' => false],
+    'tel_pai'               => ['label' => 'Telefone do pai',        'cat' => 'Responsáveis',   'default' => false],
+    'nome_responsavel'      => ['label' => 'Nome do responsável',    'cat' => 'Responsáveis',   'default' => false],
+    'cpf_responsavel'       => ['label' => 'CPF do responsável',     'cat' => 'Responsáveis',   'default' => false],
+    'tel_responsavel'       => ['label' => 'Tel. do responsável',    'cat' => 'Responsáveis',   'default' => false],
+
+    // Endereço
+    'cep'                   => ['label' => 'CEP',                    'cat' => 'Endereço',       'default' => false],
+    'logradouro'            => ['label' => 'Logradouro',             'cat' => 'Endereço',       'default' => true],
+    'numero'                => ['label' => 'Número',                 'cat' => 'Endereço',       'default' => false],
+    'complemento'           => ['label' => 'Complemento',            'cat' => 'Endereço',       'default' => false],
+    'bairro'                => ['label' => 'Bairro',                 'cat' => 'Endereço',       'default' => true],
+    'cidade'                => ['label' => 'Cidade',                 'cat' => 'Endereço',       'default' => false],
+    'uf'                    => ['label' => 'UF',                     'cat' => 'Endereço',       'default' => false],
+
+    // Socioeconômico
+    'renda_familiar'        => ['label' => 'Renda familiar (R$)',    'cat' => 'Socioeconômico', 'default' => true],
+    'cad_unico'             => ['label' => 'CadÚnico',               'cat' => 'Socioeconômico', 'default' => false],
+    'beneficio'             => ['label' => 'Recebe benefício',       'cat' => 'Socioeconômico', 'default' => false],
+    'situacao_risco_social' => ['label' => 'Situação de risco social','cat' => 'Socioeconômico','default' => false],
+
+    // Histórico
+    'ultimo_status_data'    => ['label' => 'Última mudança',         'cat' => 'Histórico',      'default' => false],
+    'ultimo_motivo'         => ['label' => 'Motivo desligamento',    'cat' => 'Histórico',      'default' => false],
+];
+
+/* ---------- Presets de exportação ---------- */
+$presets = [
+    'gesuas' => [
+        'matricula','nis','nome_crianca','cpf_crianca','data_nasc_crianca',
+        'nome_mae','cpf_mae','nome_pai','cpf_pai',
+        'cep','logradouro','numero','bairro','cidade','uf',
+        'renda_familiar','cad_unico','beneficio','situacao_risco_social'
+    ],
+    'livro_registro' => [
+        'matricula','nome_crianca','data_nasc_crianca','cidade_nasc_crianca',
+        'data_entrada_crianca','nome_mae','nome_pai','status'
+    ],
+];
+
+/* ---------- Helpers ---------- */
+function fmt_valor($key, $val) {
+    if ($val === null || $val === '') return '—';
+    if (in_array($key, ['data_nasc_crianca','data_entrada_crianca','ultimo_status_data'])) {
+        $ts = strtotime($val);
+        return $ts ? date('d/m/Y', $ts) : htmlspecialchars($val);
+    }
+    if ($key === 'renda_familiar') {
+        return 'R$ ' . number_format((float)$val, 2, ',', '.');
+    }
+    if ($key === 'tipo_responsavel') {
+        $map = ['mae' => 'Mãe', 'pai' => 'Pai', 'outro' => 'Outro'];
+        return $map[$val] ?? htmlspecialchars($val);
+    }
+    return htmlspecialchars((string) $val);
+}
+?>
+
+<section class="tc-wrapper" id="tc-wrapper"
+    data-colunas='<?= htmlspecialchars(json_encode($colunas), ENT_QUOTES, "UTF-8") ?>'
+    data-presets='<?= htmlspecialchars(json_encode($presets), ENT_QUOTES, "UTF-8") ?>'>
+
+    <div class="tc-toolbar">
+        <div class="tc-search">
+            <svg class="tc-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input type="text" id="tc-input-busca" class="tc-input-busca"
+                   placeholder="Pesquisar por nome, CPF, matrícula, mãe, bairro...">
+        </div>
+
+        <div class="tc-toolbar-actions">
+            <span class="tc-contador" id="tc-contador">
+                <?= count($criancas) ?> registro<?= count($criancas) === 1 ? '' : 's' ?>
+            </span>
+            <button type="button" class="tc-btn-export" id="tc-btn-abrir-export">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Exportar
+            </button>
+        </div>
+    </div>
+
+    <div class="tc-table-scroll">
+        <table class="tc-table" id="tc-table">
+            <thead>
+                <tr>
+                    <?php foreach ($colunas as $key => $col): if (!$col['default']) continue; ?>
+                        <th data-key="<?= $key ?>"><?= htmlspecialchars($col['label']) ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody id="tc-tbody">
+                <?php if (empty($criancas)): ?>
+                    <tr class="tc-row-vazia">
+                        <td colspan="100">Nenhuma criança cadastrada ainda.</td>
+                    </tr>
+                <?php else: foreach ($criancas as $c): ?>
+                    <tr data-search="<?= htmlspecialchars(strtolower(implode(' ', array_map('strval', array_map(fn($v)=>$v ?? '', $c))))) ?>">
+                        <?php foreach ($colunas as $key => $col): if (!$col['default']) continue; ?>
+                            <td>
+                                <?php if ($key === 'status'): ?>
+                                    <?php $s = strtolower($c['status'] ?? ''); ?>
+                                    <span class="tc-status tc-status-<?= htmlspecialchars($s) ?>">
+                                        <span class="tc-status-dot"></span>
+                                        <?= htmlspecialchars(ucfirst($s ?: '—')) ?>
+                                    </span>
+                                <?php else: ?>
+                                    <?= fmt_valor($key, $c[$key] ?? null) ?>
+                                <?php endif; ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <script type="application/json" id="tc-dataset">
+        <?= json_encode($criancas, JSON_UNESCAPED_UNICODE) ?>
+    </script>
+</section>
+
+<!-- Modal de exportação -->
+<div class="tc-overlay" id="tc-overlay-export">
+    <div class="tc-modal" role="dialog" aria-labelledby="tc-export-titulo">
+        <div class="tc-modal-header">
+            <div class="tc-modal-header-left">
+                <div class="tc-modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 id="tc-export-titulo">Exportar lista</h2>
+                    <p class="tc-modal-sub">Use um modelo pronto e/ou marque manualmente as colunas.</p>
+                </div>
+            </div>
+            <button type="button" class="tc-btn-fechar" id="tc-btn-fechar-export" aria-label="Fechar">×</button>
+        </div>
+
+        <div class="tc-modal-body">
+            <div class="tc-presets">
+                <p class="tc-presets-label">Modelos prontos <span class="tc-presets-hint">(você pode marcar/desmarcar colunas depois)</span>:</p>
+                <div class="tc-presets-buttons">
+                    <button type="button" class="tc-preset-btn" data-preset="gesuas">Padrão GesuAS</button>
+                    <button type="button" class="tc-preset-btn" data-preset="livro_registro">Livro de Registro</button>
+                    <button type="button" class="tc-preset-btn tc-preset-clear" data-preset="clear">Limpar seleção</button>
+                    <button type="button" class="tc-preset-btn tc-preset-clear" data-preset="all">Selecionar tudo</button>
+                </div>
+            </div>
+
+            <div class="tc-export-grid" id="tc-export-grid"></div>
+        </div>
+
+        <div class="tc-modal-footer">
+            <span class="tc-export-info" id="tc-export-info">0 colunas selecionadas</span>
+            <div class="tc-modal-footer-right">
+                <button type="button" class="tc-btn-cancelar" id="tc-btn-cancelar-export">Cancelar</button>
+                <button type="button" class="tc-btn-exportar-csv" id="tc-btn-exportar-csv">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Exportar CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
