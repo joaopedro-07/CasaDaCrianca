@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+include 'verificar_login.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;

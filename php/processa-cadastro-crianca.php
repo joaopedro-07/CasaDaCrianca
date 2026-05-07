@@ -49,17 +49,17 @@ try {
 
     // PASSO 3: Inserir Adultos (Mãe e Pai)
     // Função auxiliar para inserir adulto e retornar ID
-    function inserirAdulto($conexao, $nome, $cpf, $tel)
+    function inserirAdulto($conexao, $nome, $cpf, $tel, $grau_parentesco)
     {
-        $sql = "INSERT INTO tb_adultos (nome, cpf, telefone) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO tb_adultos (nome, cpf, telefone, grau_parentesco) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($conexao, $sql);
-        mysqli_stmt_bind_param($stmt, 'sss', $nome, $cpf, $tel);
+        mysqli_stmt_bind_param($stmt, 'ssss', $nome, $cpf, $tel, $grau_parentesco);
         mysqli_stmt_execute($stmt);
         return mysqli_insert_id($conexao);
     }
 
-    $idMae = inserirAdulto($conn, $_POST['nome-mae'], $_POST['cpf-mae'], $_POST['tel-mae']);
-    $idPai = inserirAdulto($conn, $_POST['nome-pai'], $_POST['cpf-pai'], $_POST['tel-pai']);
+    $idMae = inserirAdulto($conn, $_POST['nome-mae'], $_POST['cpf-mae'], $_POST['tel-mae'], 'Mãe');
+    $idPai = inserirAdulto($conn, $_POST['nome-pai'], $_POST['cpf-pai'], $_POST['tel-pai'], 'Pai');
 
     // Lógica do Responsável Legal
     if ($tipo_resp === 'mae') {
@@ -67,7 +67,8 @@ try {
     } elseif ($tipo_resp === 'pai') {
         $idResponsavel = $idPai;
     } else {
-        $idResponsavel = inserirAdulto($conn, $_POST['nome-responsavel'], $_POST['cpf-responsavel'], $_POST['tel-responsavel']);
+        $grauOutro = $_POST['grau-parentesco-responsavel'];
+        $idResponsavel = inserirAdulto($conn, $_POST['nome-responsavel'], $_POST['cpf-responsavel'], $_POST['tel-responsavel'], $grauOutro);
     }
 
     // PASSO 4: Inserir Criança (Unindo todos os IDs)

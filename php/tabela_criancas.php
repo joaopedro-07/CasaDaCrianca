@@ -1,9 +1,4 @@
 <?php
-
-if (!isset($pdo) && !isset($conn)) {
-    @include __DIR__ . '/conexao.php';
-}
-
 $criancas = [];
 
 $sql = "
@@ -31,12 +26,8 @@ $sql = "
         resp.cpf                      AS cpf_responsavel,
         resp.telefone                 AS tel_responsavel,
 
-        CASE
-            WHEN c.responsavel_legal_id = c.mae_id THEN 'mae'
-            WHEN c.responsavel_legal_id = c.pai_id THEN 'pai'
-            WHEN c.responsavel_legal_id IS NOT NULL THEN 'outro'
-            ELSE NULL
-        END                           AS tipo_responsavel,
+        /* BUSCA O GRAU DIRETAMENTE DA TABELA DE ADULTOS DO RESPONSÁVEL */
+        resp.grau_parentesco                  AS tipo_responsavel,
 
         /* Endereço */
         e.cep,
@@ -124,7 +115,7 @@ $colunas = [
     // Histórico
     'ultimo_status_data'    => ['label' => 'Última mudança',         'cat' => 'Histórico',      'default' => false],
     'ultimo_motivo'         => ['label' => 'Motivo desligamento',    'cat' => 'Histórico',      'default' => false],
-    'status'                => ['label' => 'Status',                 'cat' => 'Identificação',  'default' => true],
+    'acoes' => ['label' => 'Ações', 'cat' => 'Gerenciamento', 'default' => true],    
 ];
 
 /* ---------- Presets de exportação ---------- */
@@ -142,8 +133,10 @@ $presets = [
 ];
 
 /* ---------- Helpers ---------- */
-function fmt_valor($key, $val) {
-    if ($val === null || $val === '') return '—';
+function fmt_valor($key, $val, $linha = []) {
+    if ($key !== 'acoes' && ($val === null || $val === '')) {
+        return '—';
+    }
     if (in_array($key, ['data_nasc_crianca','data_entrada_crianca','ultimo_status_data'])) {
         $ts = strtotime($val);
         return $ts ? date('d/m/Y', $ts) : htmlspecialchars($val);
@@ -151,9 +144,21 @@ function fmt_valor($key, $val) {
     if ($key === 'renda_familiar') {
         return 'R$ ' . number_format((float)$val, 2, ',', '.');
     }
+    if ($key === 'acoes') {
+        $id = $linha['id'] ?? 0; 
+        
+        return '
+            <div class="acoes-container">
+                <button class="btn-acao edit" onclick="buscarDadosCrianca(' . $id . ')" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-acao delete" onclick="confirmarExclusao(' . $id . ')" title="Excluir">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>';
+    }
     if ($key === 'tipo_responsavel') {
-        $map = ['mae' => 'Mãe', 'pai' => 'Pai', 'outro' => 'Outro'];
-        return $map[$val] ?? htmlspecialchars($val);
+        return htmlspecialchars((string) $val);
     }
     return htmlspecialchars((string) $val);
 }
@@ -213,7 +218,7 @@ function fmt_valor($key, $val) {
                                         <?= htmlspecialchars(ucfirst($s ?: '—')) ?>
                                     </span>
                                 <?php else: ?>
-                                    <?= fmt_valor($key, $c[$key] ?? null) ?>
+                                    <?= fmt_valor($key, $c[$key] ?? null, $c) ?>
                                 <?php endif; ?>
                             </td>
                         <?php endforeach; ?>
@@ -222,6 +227,39 @@ function fmt_valor($key, $val) {
             </tbody>
         </table>
     </div>
+
+    <div id="modalEditar" class="modal">
+    <div class="modal-content">
+        <h3>Editar Informações da Criança</h3>
+        <form id="form-editar-crianca">
+            <input type="hidden" id="edit-id">
+
+            <fieldset>
+                <legend>Dados da Criança</legend>
+                <label>Nome:</label> <input type="text" id="edit-nome">
+                <label>CPF:</label> <input type="text" id="edit-cpf">
+                <label>NIS:</label> <input type="text" id="edit-nis">
+                <label>Data Nasc:</label> <input type="date" id="edit-data-nasc">
+            </fieldset>
+
+            <fieldset>
+                <legend>Responsáveis</legend>
+                <label>Nome da Mãe:</label> <input type="text" id="edit-mae">
+                <label>Nome do Pai:</label> <input type="text" id="edit-pai">
+                <label>Responsável Legal:</label> <input type="text" id="edit-resp-nome">
+                <label>Grau de Parentesco:</label> <input type="text" id="edit-parentesco">
+            </fieldset>
+
+            <fieldset>
+                <legend>Endereço</legend>
+                <label>Logradouro:</label> <input type="text" id="edit-logradouro">
+                <label>Bairro:</label> <input type="text" id="edit-bairro">
+            </fieldset>
+
+            <button type="submit">Salvar Alterações</button>
+        </form>
+    </div>
+</div>
 
     <script type="application/json" id="tc-dataset">
         <?= json_encode($criancas, JSON_UNESCAPED_UNICODE) ?>

@@ -1,10 +1,6 @@
 <?php
 include 'verificar_login.php';
 
-/* =========================================================
-   INDICADORES DO TOPO
-   ========================================================= */
-
 // 1. Total registrado
 $sqlTotal = "SELECT COUNT(*) AS total FROM tb_criancas";
 $resultTotal = mysqli_query($conn, $sqlTotal);
@@ -180,10 +176,10 @@ $percentual = $totalRegistrado > 0
                   <div class="form-field">
                     <label class="label-form-cadastro">Responsável legal</label>
                     <select name="tipo_responsavel" id="tipo_responsavel" class="input-form-cadastro" required onchange="toggleResponsavel()">
-                      <option value="" disabled selected>Selecione uma opção</option>
+                      <option value="" disabled selected>Selecione quem é o responsável legal</option>
                       <option value="mae">Mãe</option>
                       <option value="pai">Pai</option>
-                      <option value="outro">Outro responsável legal</option>
+                      <option value="outro">Outra pessoa (preencher abaixo)</option>
                     </select>
                   </div>
                 </div>

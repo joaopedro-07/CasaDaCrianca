@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../conexao.php';
+include 'verificar_login.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome = $_POST['nome'];
