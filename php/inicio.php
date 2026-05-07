@@ -222,9 +222,11 @@ $percentual = $totalRegistrado > 0
                     <div class="form-field"><label class="label-form-cadastro">CPF do responsável</label>
                       <input name="cpf-responsavel" id="cpf-responsavel" class="input-form-cadastro" type="text" placeholder="000.000.000-00"></div>
                   </div>
-                  <div class="form-row col-1">
+                  <div class="form-row">
                     <div class="form-field"><label class="label-form-cadastro">Telefone do responsável</label>
                       <input name="tel-responsavel" id="tel-responsavel" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000"></div>
+                    <div class="form-field"><label class="label-form-cadastro">Grau de Parentesco</label>
+                      <input name="grau-parentesco-responsavel" id="grau-parentesco-responsavel" class="input-form-cadastro" type="text" placeholder="Digite o grau de parentesco do responsável"></div>
                   </div>
                 </div>
               </div>

@@ -88,36 +88,35 @@ $colunas = [
     // Identificação
     'matricula'             => ['label' => 'Nº Matrícula',           'cat' => 'Identificação',  'default' => true],
     'nis'                   => ['label' => 'NIS',                    'cat' => 'Identificação',  'default' => true],
-    'nome_crianca'          => ['label' => 'Nome da criança',        'cat' => 'Identificação',  'default' => true],
-    'cpf_crianca'           => ['label' => 'CPF da criança',         'cat' => 'Identificação',  'default' => true],
+    'nome_crianca'          => ['label' => 'Nome',                   'cat' => 'Identificação',  'default' => true],
+    'cpf_crianca'           => ['label' => 'CPF da criança',         'cat' => 'Identificação',  'default' => false],
     'data_nasc_crianca'     => ['label' => 'Data de nascimento',     'cat' => 'Identificação',  'default' => true],
     'cidade_nasc_crianca'   => ['label' => 'Cidade de nascimento',   'cat' => 'Identificação',  'default' => false],
     'data_entrada_crianca'  => ['label' => 'Data de entrada',        'cat' => 'Identificação',  'default' => true],
-    'status'                => ['label' => 'Status',                 'cat' => 'Identificação',  'default' => true],
 
     // Responsáveis
     'tipo_responsavel'      => ['label' => 'Tipo de responsável',    'cat' => 'Responsáveis',   'default' => true],
-    'nome_mae'              => ['label' => 'Nome da mãe',            'cat' => 'Responsáveis',   'default' => true],
+    'nome_mae'              => ['label' => 'Nome da mãe',            'cat' => 'Responsáveis',   'default' => false],
     'cpf_mae'               => ['label' => 'CPF da mãe',             'cat' => 'Responsáveis',   'default' => false],
     'tel_mae'               => ['label' => 'Telefone da mãe',        'cat' => 'Responsáveis',   'default' => false],
-    'nome_pai'              => ['label' => 'Nome do pai',            'cat' => 'Responsáveis',   'default' => true],
+    'nome_pai'              => ['label' => 'Nome do pai',            'cat' => 'Responsáveis',   'default' => false],
     'cpf_pai'               => ['label' => 'CPF do pai',             'cat' => 'Responsáveis',   'default' => false],
     'tel_pai'               => ['label' => 'Telefone do pai',        'cat' => 'Responsáveis',   'default' => false],
-    'nome_responsavel'      => ['label' => 'Nome do responsável',    'cat' => 'Responsáveis',   'default' => false],
+    'nome_responsavel'      => ['label' => 'Nome do responsável',    'cat' => 'Responsáveis',   'default' => true],
     'cpf_responsavel'       => ['label' => 'CPF do responsável',     'cat' => 'Responsáveis',   'default' => false],
-    'tel_responsavel'       => ['label' => 'Tel. do responsável',    'cat' => 'Responsáveis',   'default' => false],
+    'tel_responsavel'       => ['label' => 'Tel. do responsável',    'cat' => 'Responsáveis',   'default' => true],
 
     // Endereço
     'cep'                   => ['label' => 'CEP',                    'cat' => 'Endereço',       'default' => false],
-    'logradouro'            => ['label' => 'Logradouro',             'cat' => 'Endereço',       'default' => true],
+    'logradouro'            => ['label' => 'Logradouro',             'cat' => 'Endereço',       'default' => false],
     'numero'                => ['label' => 'Número',                 'cat' => 'Endereço',       'default' => false],
     'complemento'           => ['label' => 'Complemento',            'cat' => 'Endereço',       'default' => false],
-    'bairro'                => ['label' => 'Bairro',                 'cat' => 'Endereço',       'default' => true],
+    'bairro'                => ['label' => 'Bairro',                 'cat' => 'Endereço',       'default' => false],
     'cidade'                => ['label' => 'Cidade',                 'cat' => 'Endereço',       'default' => false],
     'uf'                    => ['label' => 'UF',                     'cat' => 'Endereço',       'default' => false],
 
     // Socioeconômico
-    'renda_familiar'        => ['label' => 'Renda familiar (R$)',    'cat' => 'Socioeconômico', 'default' => true],
+    'renda_familiar'        => ['label' => 'Renda familiar (R$)',    'cat' => 'Socioeconômico', 'default' => false],
     'cad_unico'             => ['label' => 'CadÚnico',               'cat' => 'Socioeconômico', 'default' => false],
     'beneficio'             => ['label' => 'Recebe benefício',       'cat' => 'Socioeconômico', 'default' => false],
     'situacao_risco_social' => ['label' => 'Situação de risco social','cat' => 'Socioeconômico','default' => false],
@@ -125,6 +124,7 @@ $colunas = [
     // Histórico
     'ultimo_status_data'    => ['label' => 'Última mudança',         'cat' => 'Histórico',      'default' => false],
     'ultimo_motivo'         => ['label' => 'Motivo desligamento',    'cat' => 'Histórico',      'default' => false],
+    'status'                => ['label' => 'Status',                 'cat' => 'Identificação',  'default' => true],
 ];
 
 /* ---------- Presets de exportação ---------- */

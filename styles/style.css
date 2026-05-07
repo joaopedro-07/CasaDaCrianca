@@ -729,10 +729,7 @@ select.input-form-cadastro {
 .secao-responsavel-extra {
   display: none;
   margin-top: 4px;
-  padding: 14px 16px;
-  background: var(--color-background-secondary);
   border-radius: 10px;
-  border: 0.5px solid var(--color-border-tertiary);
 }
 
 .secao-responsavel-extra.visible {
