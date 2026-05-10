@@ -1,4 +1,6 @@
 <?php
+include 'modal_exportar_lista_criancas.php';
+include 'modal_info_criancas.php';
 $criancas = [];
 
 $sql = "
@@ -61,6 +63,8 @@ $sql = "
     ORDER BY c.nome ASC
 ";
 
+
+
 try {
     if (isset($pdo)) {
         $criancas = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
@@ -76,7 +80,6 @@ try {
 
 /* ---------- Definição central das colunas ---------- */
 $colunas = [
-    // Identificação
     'matricula'             => ['label' => 'Nº Matrícula',           'cat' => 'Identificação',  'default' => true],
     'nis'                   => ['label' => 'NIS',                    'cat' => 'Identificação',  'default' => true],
     'nome_crianca'          => ['label' => 'Nome',                   'cat' => 'Identificação',  'default' => true],
@@ -85,7 +88,6 @@ $colunas = [
     'cidade_nasc_crianca'   => ['label' => 'Cidade de nascimento',   'cat' => 'Identificação',  'default' => false],
     'data_entrada_crianca'  => ['label' => 'Data de entrada',        'cat' => 'Identificação',  'default' => true],
 
-    // Responsáveis
     'tipo_responsavel'      => ['label' => 'Tipo de responsável',    'cat' => 'Responsáveis',   'default' => true],
     'nome_mae'              => ['label' => 'Nome da mãe',            'cat' => 'Responsáveis',   'default' => false],
     'cpf_mae'               => ['label' => 'CPF da mãe',             'cat' => 'Responsáveis',   'default' => false],
@@ -97,7 +99,6 @@ $colunas = [
     'cpf_responsavel'       => ['label' => 'CPF do responsável',     'cat' => 'Responsáveis',   'default' => false],
     'tel_responsavel'       => ['label' => 'Tel. do responsável',    'cat' => 'Responsáveis',   'default' => true],
 
-    // Endereço
     'cep'                   => ['label' => 'CEP',                    'cat' => 'Endereço',       'default' => false],
     'logradouro'            => ['label' => 'Logradouro',             'cat' => 'Endereço',       'default' => false],
     'numero'                => ['label' => 'Número',                 'cat' => 'Endereço',       'default' => false],
@@ -106,38 +107,21 @@ $colunas = [
     'cidade'                => ['label' => 'Cidade',                 'cat' => 'Endereço',       'default' => false],
     'uf'                    => ['label' => 'UF',                     'cat' => 'Endereço',       'default' => false],
 
-    // Socioeconômico
     'renda_familiar'        => ['label' => 'Renda familiar (R$)',    'cat' => 'Socioeconômico', 'default' => false],
     'cad_unico'             => ['label' => 'CadÚnico',               'cat' => 'Socioeconômico', 'default' => false],
     'beneficio'             => ['label' => 'Recebe benefício',       'cat' => 'Socioeconômico', 'default' => false],
-    'situacao_risco_social' => ['label' => 'Situação de risco social','cat' => 'Socioeconômico','default' => false],
+    'situacao_risco_social' => ['label' => 'Situação de risco social', 'cat' => 'Socioeconômico', 'default' => false],
 
-    // Histórico
     'ultimo_status_data'    => ['label' => 'Última mudança',         'cat' => 'Histórico',      'default' => false],
     'ultimo_motivo'         => ['label' => 'Motivo desligamento',    'cat' => 'Histórico',      'default' => false],
-    'acoes' => ['label' => 'Ações', 'cat' => 'Gerenciamento', 'default' => true],    
 ];
 
-/* ---------- Presets de exportação ---------- */
-$presets = [
-    'gesuas' => [
-        'matricula','nis','nome_crianca','cpf_crianca','data_nasc_crianca',
-        'nome_mae','cpf_mae','nome_pai','cpf_pai',
-        'cep','logradouro','numero','bairro','cidade','uf',
-        'renda_familiar','cad_unico','beneficio','situacao_risco_social'
-    ],
-    'livro_registro' => [
-        'matricula','nome_crianca','data_nasc_crianca','cidade_nasc_crianca',
-        'data_entrada_crianca','nome_mae','nome_pai','status'
-    ],
-];
-
-/* ---------- Helpers ---------- */
-function fmt_valor($key, $val, $linha = []) {
+function fmt_valor($key, $val, $linha = [])
+{
     if ($key !== 'acoes' && ($val === null || $val === '')) {
         return '—';
     }
-    if (in_array($key, ['data_nasc_crianca','data_entrada_crianca','ultimo_status_data'])) {
+    if (in_array($key, ['data_nasc_crianca', 'data_entrada_crianca', 'ultimo_status_data'])) {
         $ts = strtotime($val);
         return $ts ? date('d/m/Y', $ts) : htmlspecialchars($val);
     }
@@ -145,8 +129,8 @@ function fmt_valor($key, $val, $linha = []) {
         return 'R$ ' . number_format((float)$val, 2, ',', '.');
     }
     if ($key === 'acoes') {
-        $id = $linha['id'] ?? 0; 
-        
+        $id = $linha['id'] ?? 0;
+
         return '
             <div class="acoes-container">
                 <button class="btn-acao edit" onclick="buscarDadosCrianca(' . $id . ')" title="Editar">
@@ -175,7 +159,7 @@ function fmt_valor($key, $val, $linha = []) {
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input type="text" id="tc-input-busca" class="tc-input-busca"
-                   placeholder="Pesquisar por nome, CPF, matrícula, mãe, bairro...">
+                placeholder="Pesquisar por nome, CPF, matrícula, mãe, bairro...">
         </div>
 
         <div class="tc-toolbar-actions">
@@ -184,9 +168,9 @@ function fmt_valor($key, $val, $linha = []) {
             </span>
             <button type="button" class="tc-btn-export" id="tc-btn-abrir-export">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
                 Exportar
             </button>
@@ -207,110 +191,28 @@ function fmt_valor($key, $val, $linha = []) {
                     <tr class="tc-row-vazia">
                         <td colspan="100">Nenhuma criança cadastrada ainda.</td>
                     </tr>
-                <?php else: foreach ($criancas as $c): ?>
-                    <tr data-search="<?= htmlspecialchars(strtolower(implode(' ', array_map('strval', array_map(fn($v)=>$v ?? '', $c))))) ?>">
-                        <?php foreach ($colunas as $key => $col): if (!$col['default']) continue; ?>
-                            <td>
-                                <?php if ($key === 'status'): ?>
-                                    <?php $s = strtolower($c['status'] ?? ''); ?>
-                                    <span class="tc-status tc-status-<?= htmlspecialchars($s) ?>">
-                                        <span class="tc-status-dot"></span>
-                                        <?= htmlspecialchars(ucfirst($s ?: '—')) ?>
-                                    </span>
-                                <?php else: ?>
-                                    <?= fmt_valor($key, $c[$key] ?? null, $c) ?>
-                                <?php endif; ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; endif; ?>
+                    <?php else: foreach ($criancas as $c): ?>
+                        <tr class="tc-row-clicavel" data-id="<?= $c['id'] ?>" data-search="<?= htmlspecialchars(strtolower(implode(' ', array_map('strval', array_map(fn($v) => $v ?? '', $c))))) ?>">
+                            <?php foreach ($colunas as $key => $col): if (!$col['default']) continue; ?>
+                                <td class="td-row-clicavel">
+                                    <?php if ($key === 'status'): ?>
+                                        <?php $s = strtolower($c['status'] ?? ''); ?>
+                                        <span class="tc-status tc-status-<?= htmlspecialchars($s) ?>">
+                                            <span class="tc-status-dot"></span>
+                                            <?= htmlspecialchars(ucfirst($s ?: '—')) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <?= fmt_valor($key, $c[$key] ?? null, $c) ?>
+                                    <?php endif; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                <?php endforeach;
+                endif; ?>
             </tbody>
         </table>
     </div>
-
-    <div id="modalEditar" class="modal">
-    <div class="modal-content">
-        <h3>Editar Informações da Criança</h3>
-        <form id="form-editar-crianca">
-            <input type="hidden" id="edit-id">
-
-            <fieldset>
-                <legend>Dados da Criança</legend>
-                <label>Nome:</label> <input type="text" id="edit-nome">
-                <label>CPF:</label> <input type="text" id="edit-cpf">
-                <label>NIS:</label> <input type="text" id="edit-nis">
-                <label>Data Nasc:</label> <input type="date" id="edit-data-nasc">
-            </fieldset>
-
-            <fieldset>
-                <legend>Responsáveis</legend>
-                <label>Nome da Mãe:</label> <input type="text" id="edit-mae">
-                <label>Nome do Pai:</label> <input type="text" id="edit-pai">
-                <label>Responsável Legal:</label> <input type="text" id="edit-resp-nome">
-                <label>Grau de Parentesco:</label> <input type="text" id="edit-parentesco">
-            </fieldset>
-
-            <fieldset>
-                <legend>Endereço</legend>
-                <label>Logradouro:</label> <input type="text" id="edit-logradouro">
-                <label>Bairro:</label> <input type="text" id="edit-bairro">
-            </fieldset>
-
-            <button type="submit">Salvar Alterações</button>
-        </form>
-    </div>
-</div>
-
     <script type="application/json" id="tc-dataset">
         <?= json_encode($criancas, JSON_UNESCAPED_UNICODE) ?>
     </script>
 </section>
-
-<!-- Modal de exportação -->
-<div class="tc-overlay" id="tc-overlay-export">
-    <div class="tc-modal" role="dialog" aria-labelledby="tc-export-titulo">
-        <div class="tc-modal-header">
-            <div class="tc-modal-header-left">
-                <div class="tc-modal-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 id="tc-export-titulo">Exportar lista</h2>
-                    <p class="tc-modal-sub">Use um modelo pronto e/ou marque manualmente as colunas.</p>
-                </div>
-            </div>
-            <button type="button" class="tc-btn-fechar" id="tc-btn-fechar-export" aria-label="Fechar">×</button>
-        </div>
-
-        <div class="tc-modal-body">
-            <div class="tc-presets">
-                <p class="tc-presets-label">Modelos prontos <span class="tc-presets-hint">(você pode marcar/desmarcar colunas depois)</span>:</p>
-                <div class="tc-presets-buttons">
-                    <button type="button" class="tc-preset-btn" data-preset="gesuas">Padrão GesuAS</button>
-                    <button type="button" class="tc-preset-btn" data-preset="livro_registro">Livro de Registro</button>
-                    <button type="button" class="tc-preset-btn tc-preset-clear" data-preset="clear">Limpar seleção</button>
-                    <button type="button" class="tc-preset-btn tc-preset-clear" data-preset="all">Selecionar tudo</button>
-                </div>
-            </div>
-
-            <div class="tc-export-grid" id="tc-export-grid"></div>
-        </div>
-
-        <div class="tc-modal-footer">
-            <span class="tc-export-info" id="tc-export-info">0 colunas selecionadas</span>
-            <div class="tc-modal-footer-right">
-                <button type="button" class="tc-btn-cancelar" id="tc-btn-cancelar-export">Cancelar</button>
-                <button type="button" class="tc-btn-exportar-csv" id="tc-btn-exportar-csv">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    Exportar CSV
-                </button>
-            </div>
-        </div>
-    </div>
-</div>

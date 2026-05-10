@@ -1,9 +1,3 @@
-function fecharModal(e) {
-  if (e.target === document.getElementById("overlay")) {
-    document.getElementById("overlay").classList.remove("open");
-  }
-}
-
 function toggleMotivo() {
   const val = document.getElementById("select-motivo").value;
   const campo = document.getElementById("campo-motivo-outro");
@@ -17,7 +11,7 @@ function goStep(n) {
   document.getElementById("step-" + currentStep).classList.remove("active");
   document
     .querySelectorAll(".step-tab")
-    [currentStep].classList.remove("active");
+  [currentStep].classList.remove("active");
   currentStep = n;
   document.getElementById("step-" + currentStep).classList.add("active");
   document.querySelectorAll(".step-tab")[currentStep].classList.add("active");

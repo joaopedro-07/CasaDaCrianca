@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql = "INSERT INTO administradores (nome, email, cpf, genero, telefone, senha) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     
-    // Vincula os 6 parâmetros (todos strings)
     $stmt->bind_param("ssssss", $nome, $email, $cpf, $genero, $telefone, $senha);
     
     if ($stmt->execute()) {
