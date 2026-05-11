@@ -1,26 +1,26 @@
 FROM php:8.2-apache
 
-# Instala dependências
+# Atualiza pacotes
 RUN apt-get update && apt-get install -y \
     unzip \
     git \
     libzip-dev
 
 # Instala extensões PHP
-RUN docker-php-ext-install zip pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo pdo_mysql zip
 
-# Habilita mod_rewrite
+# Habilita rewrite
 RUN a2enmod rewrite
 
-# Instala Composer
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copia projeto
+# Copia arquivos
 COPY . /var/www/html/
 
 WORKDIR /var/www/html
 
-# Instala dependências do composer
+# Instala dependências
 RUN composer install
 
 # Permissões
