@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 include 'verificar_login.php';
 
 $id = $_SESSION['admin_id'];
@@ -116,4 +116,4 @@ $admin = $resultado->fetch_assoc();
         window.onclick = function(e) { if(e.target.className === "modal") e.target.style.display = "none"; }
     </script>
 </body>
-</html>
+</html> -->
