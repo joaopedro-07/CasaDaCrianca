@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 05/05/2026 às 17:02
+-- Tempo de geração: 11/05/2026 às 19:17
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -57,6 +57,7 @@ CREATE TABLE `tb_adultos` (
   `id` int(11) NOT NULL,
   `nome` varchar(200) NOT NULL,
   `cpf` varchar(14) DEFAULT NULL,
+  `grau_parentesco` varchar(50) NOT NULL,
   `telefone` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -197,19 +198,19 @@ ALTER TABLE `administradores`
 -- AUTO_INCREMENT de tabela `tb_adultos`
 --
 ALTER TABLE `tb_adultos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `tb_criancas`
 --
 ALTER TABLE `tb_criancas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `tb_enderecos`
 --
 ALTER TABLE `tb_enderecos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de tabela `tb_historico_status`
@@ -221,7 +222,7 @@ ALTER TABLE `tb_historico_status`
 -- AUTO_INCREMENT de tabela `tb_info_socioeconomica`
 --
 ALTER TABLE `tb_info_socioeconomica`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restrições para tabelas despejadas
