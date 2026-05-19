@@ -9,6 +9,8 @@ $cpf_crianca   = strip_tags($_POST['cpf-crianca'] ?? '');
 $data_nasc     = strip_tags($_POST['data-nasc-crianca'] ?? '');
 $cidade_nasc   = strip_tags($_POST['cidade-nasc-crianca'] ?? '');
 $data_entrada  = strip_tags($_POST['data-entrada-crianca'] ?? '');
+$genero        = strip_tags($_POST['genero'] ?? '');
+$idade         = strip_tags($_POST['idade'] ?? '');
 
 // Sem strip_tags conforme solicitado
 $status        = $_POST['status'] ?? '';
@@ -28,7 +30,10 @@ $situacao_risco = strip_tags($_POST['situacao-risco-social'] ?? '');
 $recebe_benef   = strip_tags($_POST['beneficio'] ?? '');
 
 // Responsáveis
-$tipo_resp = $_POST['tipo_responsavel'];
+$tipo_resp        = $_POST['tipo_responsavel'] ?? '';
+$profissao_mae    = strip_tags($_POST['profissao-mae'] ?? '');
+$profissao_pai    = strip_tags($_POST['profissao-pai'] ?? '');
+$profissao_outro  = strip_tags($_POST['profissao-responsavel'] ?? '');
 
 mysqli_begin_transaction($conn);
 
@@ -47,19 +52,19 @@ try {
     mysqli_stmt_execute($stmtSoc);
     $idFamilia = mysqli_insert_id($conn);
 
-    // PASSO 3: Inserir Adultos (Mãe e Pai)
-    // Função auxiliar para inserir adulto e retornar ID
-    function inserirAdulto($conexao, $nome, $cpf, $tel, $grau_parentesco)
+    // PASSO 3: Inserir Adultos
+    // Função auxiliar agora aceita profissão
+    function inserirAdulto($conexao, $nome, $cpf, $tel, $grau_parentesco, $profissao = '')
     {
-        $sql = "INSERT INTO tb_adultos (nome, cpf, telefone, grau_parentesco) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO tb_adultos (nome, cpf, telefone, grau_parentesco, profissao) VALUES (?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conexao, $sql);
-        mysqli_stmt_bind_param($stmt, 'ssss', $nome, $cpf, $tel, $grau_parentesco);
+        mysqli_stmt_bind_param($stmt, 'sssss', $nome, $cpf, $tel, $grau_parentesco, $profissao);
         mysqli_stmt_execute($stmt);
         return mysqli_insert_id($conexao);
     }
 
-    $idMae = inserirAdulto($conn, $_POST['nome-mae'], $_POST['cpf-mae'], $_POST['tel-mae'], 'Mãe');
-    $idPai = inserirAdulto($conn, $_POST['nome-pai'], $_POST['cpf-pai'], $_POST['tel-pai'], 'Pai');
+    $idMae = inserirAdulto($conn, $_POST['nome-mae'], $_POST['cpf-mae'], $_POST['tel-mae'], 'Mãe', $profissao_mae);
+    $idPai = inserirAdulto($conn, $_POST['nome-pai'], $_POST['cpf-pai'], $_POST['tel-pai'], 'Pai', $profissao_pai);
 
     // Lógica do Responsável Legal
     if ($tipo_resp === 'mae') {
@@ -67,23 +72,32 @@ try {
     } elseif ($tipo_resp === 'pai') {
         $idResponsavel = $idPai;
     } else {
-        $grauOutro = $_POST['grau-parentesco-responsavel'];
-        $idResponsavel = inserirAdulto($conn, $_POST['nome-responsavel'], $_POST['cpf-responsavel'], $_POST['tel-responsavel'], $grauOutro);
+        $grauOutro = $_POST['grau-parentesco-responsavel'] ?? '';
+        $idResponsavel = inserirAdulto(
+            $conn,
+            $_POST['nome-responsavel'],
+            $_POST['cpf-responsavel'],
+            $_POST['tel-responsavel'],
+            $grauOutro,
+            $profissao_outro
+        );
     }
 
-    // PASSO 4: Inserir Criança (Unindo todos os IDs)
+    // PASSO 4: Inserir Criança — inclui genero e idade
     $sqlCrianca = "INSERT INTO tb_criancas 
-        (matricula, nis, cpf, nome, data_nasc, cidade_nasc, status, data_entrada, pai_id, mae_id, responsavel_legal_id, endereco_id, familia_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (matricula, nis, cpf, nome, genero, idade, data_nasc, cidade_nasc, status, data_entrada, pai_id, mae_id, responsavel_legal_id, endereco_id, familia_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmtCrianca = mysqli_prepare($conn, $sqlCrianca);
     mysqli_stmt_bind_param(
         $stmtCrianca,
-        'ssssssssiiiii',
+        'ssssssssssiiiii', // fix: era 'ssssssssssiiii i' com espaço
         $matricula,
         $nis,
         $cpf_crianca,
         $nome_crianca,
+        $genero,
+        $idade,
         $data_nasc,
         $cidade_nasc,
         $status,
