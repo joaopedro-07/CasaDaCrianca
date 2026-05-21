@@ -7,6 +7,7 @@ $nis           = strip_tags($_POST['nis'] ?? '');
 $nome_crianca  = strip_tags($_POST['nome-crianca'] ?? '');
 $cpf_crianca   = strip_tags($_POST['cpf-crianca'] ?? '');
 $data_nasc     = strip_tags($_POST['data-nasc-crianca'] ?? '');
+$estado_nasc   = strip_tags($_POST['estado-nasc-crianca'] ?? '');
 $cidade_nasc   = strip_tags($_POST['cidade-nasc-crianca'] ?? '');
 $data_entrada  = strip_tags($_POST['data-entrada-crianca'] ?? '');
 $genero        = strip_tags($_POST['genero'] ?? '');
@@ -85,13 +86,13 @@ try {
 
     // PASSO 4: Inserir Criança — inclui genero e idade
     $sqlCrianca = "INSERT INTO tb_criancas 
-        (matricula, nis, cpf, nome, genero, idade, data_nasc, cidade_nasc, status, data_entrada, pai_id, mae_id, responsavel_legal_id, endereco_id, familia_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (matricula, nis, cpf, nome, genero, idade, data_nasc, estado_nasc, cidade_nasc, status, data_entrada, pai_id, mae_id, responsavel_legal_id, endereco_id, familia_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmtCrianca = mysqli_prepare($conn, $sqlCrianca);
     mysqli_stmt_bind_param(
         $stmtCrianca,
-        'ssssssssssiiiii', // fix: era 'ssssssssssiiii i' com espaço
+        'sssssssssssiiiii', // fix: era 'ssssssssssiiii i' com espaço
         $matricula,
         $nis,
         $cpf_crianca,
@@ -99,6 +100,7 @@ try {
         $genero,
         $idade,
         $data_nasc,
+        $estado_nasc,
         $cidade_nasc,
         $status,
         $data_entrada,

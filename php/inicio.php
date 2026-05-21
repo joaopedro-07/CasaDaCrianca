@@ -77,7 +77,7 @@ $percentual = $totalRegistrado > 0
       </section>
 
       <section class="actions-bar">
-        <a href="renda_beneficios.php" class="button-ver-renda-beneficios">Ver Renda e Benefícios</a>
+        <a href="renda_beneficios.php" class="button-ver-renda-beneficios">Ver Estatísticas das Crianças</a>
         <button class="btn-novo" onclick="document.getElementById('overlay').classList.add('open')">+ Adicionar Criança</button>
       </section>
 

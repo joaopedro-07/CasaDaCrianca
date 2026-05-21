@@ -16,7 +16,8 @@
             <p class="modal-header-sub">Preencha todos os campos obrigatórios</p>
           </div>
         </div>
-        <button type="button" class="btn-fechar" onclick="document.getElementById('overlay').classList.remove('open')">×</button>
+        <button type="button" class="btn-fechar"
+          onclick="document.getElementById('overlay').classList.remove('open')">×</button>
       </div>
 
       <div class="form-body">
@@ -39,7 +40,8 @@
             </div>
             <div class="form-field">
               <label class="label-form-cadastro">NIS</label>
-              <input name="nis" class="input-form-cadastro" type="text" placeholder="Número de Identificação Social" required>
+              <input name="nis" class="input-form-cadastro" type="text" placeholder="Número de Identificação Social"
+                required>
             </div>
           </div>
           <div class="form-row col-1">
@@ -54,14 +56,6 @@
               <input name="cpf-crianca" class="input-form-cadastro" type="text" placeholder="000.000.000-00" required>
             </div>
             <div class="form-field">
-              <label class="label-form-cadastro">Data de nascimento</label>
-              <input name="data-nasc-crianca" id="data-nasc-crianca" class="input-form-cadastro" type="date" required onchange="calcularIdade()">
-            </div>
-          </div>
-
-          <!-- NOVO: Gênero e Idade -->
-          <div class="form-row">
-            <div class="form-field">
               <label class="label-form-cadastro">Gênero</label>
               <select name="genero" class="input-form-cadastro" required>
                 <option value="" disabled selected>Selecione o gênero</option>
@@ -71,20 +65,56 @@
                 <option value="Não informado">Prefiro não informar</option>
               </select>
             </div>
+          </div>
+
+          <!-- NOVO: Gênero e Idade -->
+          <div class="form-row">
+            <div class="form-field">
+              <label class="label-form-cadastro">Data de nascimento</label>
+              <input name="data-nasc-crianca" id="data-nasc-crianca" class="input-form-cadastro" type="date" required
+                onchange="calcularIdade()">
+            </div>
             <div class="form-field">
               <label class="label-form-cadastro">Idade</label>
-              <input name="idade" id="idade-crianca" class="input-form-cadastro" type="text" placeholder="Calculada automaticamente" readonly>
+              <input name="idade" id="idade-crianca" class="input-form-cadastro" type="text"
+                placeholder="Calculada automaticamente" readonly>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field">
-              <label class="label-form-cadastro">Cidade de nascimento</label>
-              <input name="cidade-nasc-crianca" class="input-form-cadastro" type="text" placeholder="Município" required>
+              <label class="label-form-cadastro">Estado de nascimento</label>
+
+              <select name="estado-nasc-crianca" id="estado" class="input-form-cadastro" required>
+                <option value="">Selecione o estado</option>
+              </select>
             </div>
             <div class="form-field">
-              <label class="label-form-cadastro">Data de entrada</label>
-              <input name="data-entrada-crianca" class="input-form-cadastro" type="date" required>
+              <label class="label-form-cadastro">
+                Cidade de nascimento
+              </label>
+
+              <select id="cidadeNascimento" name="cidade-nasc-crianca" class="input-form-cadastro" required>
+                <option value="">Selecione uma cidade</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label class="label-form-cadastro">
+                Data de entrada
+              </label>
+
+              <input name="data-entrada-crianca" class="input-form-cadastro" type="date" id="data-entrada-crianca"
+                required onchange="calcularTempoEntrada()">
+            </div>
+
+            <div class="form-field">
+              <label class="label-form-cadastro">
+                Quanto tempo desde a entrada
+              </label>
+
+              <input name="entrada-tempo" id="tempo-entrada-crianca" class="input-form-cadastro" type="text"
+                placeholder="Calculada automaticamente" readonly>
             </div>
           </div>
           <div class="form-row col-1">
@@ -107,7 +137,8 @@
           <div class="form-row col-1">
             <div class="form-field">
               <label class="label-form-cadastro">Responsável legal</label>
-              <select name="tipo_responsavel" id="tipo_responsavel" class="input-form-cadastro" required onchange="toggleResponsavel()">
+              <select name="tipo_responsavel" id="tipo_responsavel" class="input-form-cadastro" required
+                onchange="toggleResponsavel()">
                 <option value="" disabled selected>Selecione quem é o responsável legal</option>
                 <option value="mae">Mãe</option>
                 <option value="pai">Pai</option>
@@ -119,12 +150,16 @@
           <!-- Mãe -->
           <div id="secao-mae">
             <div class="container-titulo-modal">
-              <p class="section-title" id="titulo-mae">Identificação da mãe <span class="badge-opcional" id="badge-mae-opcional" style="display:none; font-size:11px; background:#e5e7eb; color:#6b7280; padding:2px 7px; border-radius:10px; font-weight:500;">Opcional</span></p>
+              <p class="section-title" id="titulo-mae">Identificação da mãe <span class="badge-opcional"
+                  id="badge-mae-opcional"
+                  style="display:none; font-size:11px; background:#e5e7eb; color:#6b7280; padding:2px 7px; border-radius:10px; font-weight:500;">Opcional</span>
+              </p>
             </div>
             <div class="form-row">
               <div class="form-field">
                 <label class="label-form-cadastro">Nome da mãe</label>
-                <input name="nome-mae" id="nome-mae" class="input-form-cadastro" type="text" placeholder="Nome completo">
+                <input name="nome-mae" id="nome-mae" class="input-form-cadastro" type="text"
+                  placeholder="Nome completo">
               </div>
               <div class="form-field">
                 <label class="label-form-cadastro">CPF da mãe</label>
@@ -155,12 +190,15 @@
           <!-- Pai -->
           <div id="secao-pai">
             <div class="container-titulo-modal">
-              <p class="section-title">Identificação do pai <span class="badge-opcional" id="badge-pai-opcional" style="display:none; font-size:11px; background:#e5e7eb; color:#6b7280; padding:2px 7px; border-radius:10px; font-weight:500;">Opcional</span></p>
+              <p class="section-title">Identificação do pai <span class="badge-opcional" id="badge-pai-opcional"
+                  style="display:none; font-size:11px; background:#e5e7eb; color:#6b7280; padding:2px 7px; border-radius:10px; font-weight:500;">Opcional</span>
+              </p>
             </div>
             <div class="form-row">
               <div class="form-field">
                 <label class="label-form-cadastro">Nome do pai</label>
-                <input name="nome-pai" id="nome-pai" class="input-form-cadastro" type="text" placeholder="Nome completo">
+                <input name="nome-pai" id="nome-pai" class="input-form-cadastro" type="text"
+                  placeholder="Nome completo">
               </div>
               <div class="form-field">
                 <label class="label-form-cadastro">CPF do pai</label>
@@ -191,26 +229,31 @@
           <!-- Outro responsável -->
           <div id="secao-responsavel-extra" class="secao-responsavel-extra" style="display:none;">
             <div class="container-titulo-modal">
-              <p class="section-title" style="margin-top: 0;"><span class="badge-outro">Outro</span> Dados do responsável legal</p>
+              <p class="section-title" style="margin-top: 0;"><span class="badge-outro">Outro</span> Dados do
+                responsável legal</p>
             </div>
             <div class="form-row">
               <div class="form-field">
                 <label class="label-form-cadastro">Nome do responsável</label>
-                <input name="nome-responsavel" id="nome-responsavel" class="input-form-cadastro" type="text" placeholder="Nome completo">
+                <input name="nome-responsavel" id="nome-responsavel" class="input-form-cadastro" type="text"
+                  placeholder="Nome completo">
               </div>
               <div class="form-field">
                 <label class="label-form-cadastro">CPF do responsável</label>
-                <input name="cpf-responsavel" id="cpf-responsavel" class="input-form-cadastro" type="text" placeholder="000.000.000-00">
+                <input name="cpf-responsavel" id="cpf-responsavel" class="input-form-cadastro" type="text"
+                  placeholder="000.000.000-00">
               </div>
             </div>
             <div class="form-row">
               <div class="form-field">
                 <label class="label-form-cadastro">Telefone do responsável</label>
-                <input name="tel-responsavel" id="tel-responsavel" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000">
+                <input name="tel-responsavel" id="tel-responsavel" class="input-form-cadastro" type="tel"
+                  placeholder="(00) 00000-0000">
               </div>
               <div class="form-field">
                 <label class="label-form-cadastro">Grau de Parentesco</label>
-                <input name="grau-parentesco-responsavel" id="grau-parentesco-responsavel" class="input-form-cadastro" type="text" placeholder="Digite o grau de parentesco do responsável">
+                <input name="grau-parentesco-responsavel" id="grau-parentesco-responsavel" class="input-form-cadastro"
+                  type="text" placeholder="Digite o grau de parentesco do responsável">
               </div>
             </div>
             <div class="form-row col-1">
@@ -249,7 +292,8 @@
           <div class="form-row col-1">
             <div class="form-field">
               <label class="label-form-cadastro">Rua / Logradouro</label>
-              <input name="logradouro" class="input-form-cadastro" type="text" placeholder="Nome da rua, avenida..." required>
+              <input name="logradouro" class="input-form-cadastro" type="text" placeholder="Nome da rua, avenida..."
+                required>
             </div>
           </div>
           <div class="form-row col-3">
@@ -276,7 +320,8 @@
           <div class="form-row col-1">
             <div class="form-field">
               <label class="label-form-cadastro">Renda familiar (R$)</label>
-              <input name="renda-familiar" class="input-form-cadastro" type="number" step="0.01" min="0" placeholder="0,00" required>
+              <input name="renda-familiar" class="input-form-cadastro" type="number" step="0.01" min="0"
+                placeholder="0,00" required>
               <p class="field-hint">Informe o valor mensal total da família</p>
             </div>
           </div>
@@ -319,7 +364,8 @@
         <div class="container-footer-modal">
           <div class="footer-left"><span id="step-indicator">Passo 1 de 4</span></div>
           <div class="footer-right">
-            <button type="button" class="btn-cancelar" id="btn-back" onclick="navStep(-1)" style="display:none">← Voltar</button>
+            <button type="button" class="btn-cancelar" id="btn-back" onclick="navStep(-1)" style="display:none">←
+              Voltar</button>
             <button type="button" class="btn-salvar" id="btn-next" onclick="navStep(1)">Próximo →</button>
             <button type="submit" class="btn-salvar" id="btn-salvar" style="display:none">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -335,6 +381,64 @@
 </form>
 
 <script>
+  const estadoSelect = document.getElementById('estado');
+  const cidadeSelect = document.getElementById('cidadeNascimento');
+
+  // Carrega estados
+  async function carregarEstados() {
+    const response = await fetch(
+      'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome'
+    );
+
+    const estados = await response.json();
+
+    estados.forEach(estado => {
+      const option = document.createElement('option');
+
+      option.value = estado.sigla; // SP, RJ, MG...
+      option.textContent = estado.nome;
+
+      estadoSelect.appendChild(option);
+    });
+  }
+
+  // Carrega cidades baseado na UF selecionada
+  async function carregarCidades(uf) {
+
+    cidadeSelect.innerHTML =
+      '<option value="">Carregando...</option>';
+
+    const response = await fetch(
+      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`
+    );
+
+    const cidades = await response.json();
+
+    cidadeSelect.innerHTML =
+      '<option value="">Selecione uma cidade</option>';
+
+    cidades.forEach(cidade => {
+      const option = document.createElement('option');
+
+      option.value = cidade.nome;
+      option.textContent = cidade.nome;
+
+      cidadeSelect.appendChild(option);
+    });
+  }
+
+  // Evento ao trocar estado
+  estadoSelect.addEventListener('change', (event) => {
+
+    const ufSelecionada = event.target.value;
+
+    if (ufSelecionada) {
+      carregarCidades(ufSelecionada);
+    }
+  });
+
+  carregarEstados();
+
   // Calcula idade automaticamente ao preencher data de nascimento
   function calcularIdade() {
     const input = document.getElementById('data-nasc-crianca');
@@ -348,25 +452,67 @@
     campoIdade.value = anos >= 0 ? anos + ' ano(s)' : '';
   }
 
+  function calcularTempoEntrada() {
+
+    const input =
+      document.getElementById('data-entrada-crianca');
+
+    const campoEntrada =
+      document.getElementById('tempo-entrada-crianca');
+
+    if (!input.value) {
+      campoEntrada.value = '';
+      return;
+    }
+
+    const entrada = new Date(input.value);
+    const hoje = new Date();
+
+    let anos = hoje.getFullYear() - entrada.getFullYear();
+    let meses = hoje.getMonth() - entrada.getMonth();
+    let dias = hoje.getDate() - entrada.getDate();
+
+    if (dias < 0) {
+
+      meses--;
+
+      const ultimoMes = new Date(
+        hoje.getFullYear(),
+        hoje.getMonth(),
+        0
+      );
+
+      dias += ultimoMes.getDate();
+    }
+
+    if (meses < 0) {
+      anos--;
+      meses += 12;
+    }
+
+    campoEntrada.value =
+      `${anos} ano(s), ${meses} mes(es) e ${dias} dia(s)`;
+  }
+
   // Controla required e visibilidade das seções de responsável
   function toggleResponsavel() {
     const tipo = document.getElementById('tipo_responsavel').value;
 
     // Campos mãe
     const nomeMae = document.getElementById('nome-mae');
-    const cpfMae  = document.getElementById('cpf-mae');
+    const cpfMae = document.getElementById('cpf-mae');
     const badgeMae = document.getElementById('badge-mae-opcional');
 
     // Campos pai
     const nomePai = document.getElementById('nome-pai');
-    const cpfPai  = document.getElementById('cpf-pai');
+    const cpfPai = document.getElementById('cpf-pai');
     const badgePai = document.getElementById('badge-pai-opcional');
 
     // Seção outro
     const secaoOutro = document.getElementById('secao-responsavel-extra');
-    const nomeOutro  = document.getElementById('nome-responsavel');
-    const cpfOutro   = document.getElementById('cpf-responsavel');
-    const grauOutro  = document.getElementById('grau-parentesco-responsavel');
+    const nomeOutro = document.getElementById('nome-responsavel');
+    const cpfOutro = document.getElementById('cpf-responsavel');
+    const grauOutro = document.getElementById('grau-parentesco-responsavel');
 
     // Reseta tudo
     nomeMae.required = false; cpfMae.required = false;
