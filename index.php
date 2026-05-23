@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $erro = "Usuário não encontrado!";
     }
 }
+
 ?>
 
 <!DOCTYPE html>

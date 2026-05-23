@@ -381,161 +381,165 @@
 </form>
 
 <script>
-  const estadoSelect = document.getElementById('estado');
-  const cidadeSelect = document.getElementById('cidadeNascimento');
+  const estadoSelect  = document.getElementById('estado');
+  const cidadeSelect  = document.getElementById('cidadeNascimento');
 
-  // Carrega estados
   async function carregarEstados() {
-    const response = await fetch(
-      'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome'
-    );
+    try {
+      const res    = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
+      const estados = await res.json();
 
-    const estados = await response.json();
-
-    estados.forEach(estado => {
-      const option = document.createElement('option');
-
-      option.value = estado.sigla; // SP, RJ, MG...
-      option.textContent = estado.nome;
-
-      estadoSelect.appendChild(option);
-    });
-  }
-
-  // Carrega cidades baseado na UF selecionada
-  async function carregarCidades(uf) {
-
-    cidadeSelect.innerHTML =
-      '<option value="">Carregando...</option>';
-
-    const response = await fetch(
-      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`
-    );
-
-    const cidades = await response.json();
-
-    cidadeSelect.innerHTML =
-      '<option value="">Selecione uma cidade</option>';
-
-    cidades.forEach(cidade => {
-      const option = document.createElement('option');
-
-      option.value = cidade.nome;
-      option.textContent = cidade.nome;
-
-      cidadeSelect.appendChild(option);
-    });
-  }
-
-  // Evento ao trocar estado
-  estadoSelect.addEventListener('change', (event) => {
-
-    const ufSelecionada = event.target.value;
-
-    if (ufSelecionada) {
-      carregarCidades(ufSelecionada);
+      estados.forEach(({ sigla, nome }) => {
+        estadoSelect.appendChild(new Option(nome, sigla));
+      });
+    } catch {
+      console.error('Erro ao carregar estados.');
     }
+  }
+
+  async function carregarCidades(uf) {
+    cidadeSelect.innerHTML = '<option value="">Carregando...</option>';
+    cidadeSelect.disabled  = true;
+
+    try {
+      const res    = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+      const cidades = await res.json();
+
+      cidadeSelect.innerHTML = '<option value="">Selecione uma cidade</option>';
+      cidades.forEach(({ nome }) => {
+        cidadeSelect.appendChild(new Option(nome, nome));
+      });
+    } catch {
+      cidadeSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+    } finally {
+      cidadeSelect.disabled = false;
+    }
+  }
+
+  estadoSelect.addEventListener('change', (e) => {
+    if (e.target.value) carregarCidades(e.target.value);
   });
 
   carregarEstados();
 
-  // Calcula idade automaticamente ao preencher data de nascimento
+  const campoCep = document.querySelector('input[name="cep"]');
+
+  campoCep.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+    this.value = v;
+  });
+
+  campoCep.addEventListener('blur', async function () {
+    const cep = this.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    this.value    = 'Buscando...';
+    this.disabled = true;
+
+    try {
+      const res  = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+
+      if (data.erro) throw new Error('CEP não encontrado');
+
+      document.querySelector('input[name="logradouro"]').value = data.logradouro || '';
+      document.querySelector('input[name="bairro"]').value     = data.bairro     || '';
+      document.querySelector('input[name="cidade"]').value     = data.localidade || '';
+      document.querySelector('input[name="uf"]').value         = data.uf         || '';
+
+      this.value = cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+      document.querySelector('input[name="numero"]').focus();
+
+    } catch (err) {
+      alert(err.message === 'CEP não encontrado'
+        ? 'CEP não encontrado. Verifique e tente novamente.'
+        : 'Erro ao buscar o CEP. Tente novamente.');
+      this.value = '';
+    } finally {
+      this.disabled = false;
+    }
+  });
+
+  function diffDatas(dataInicio) {
+    const inicio = new Date(dataInicio);
+    const hoje   = new Date();
+
+    let anos  = hoje.getFullYear() - inicio.getFullYear();
+    let meses = hoje.getMonth()    - inicio.getMonth();
+    let dias  = hoje.getDate()     - inicio.getDate();
+
+    if (dias < 0) {
+      meses--;
+      dias += new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+    }
+    if (meses < 0) { anos--; meses += 12; }
+
+    return { anos, meses, dias };
+  }
+
   function calcularIdade() {
-    const input = document.getElementById('data-nasc-crianca');
+    const input      = document.getElementById('data-nasc-crianca');
     const campoIdade = document.getElementById('idade-crianca');
+
     if (!input.value) { campoIdade.value = ''; return; }
-    const nasc = new Date(input.value);
-    const hoje = new Date();
-    let anos = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) anos--;
-    campoIdade.value = anos >= 0 ? anos + ' ano(s)' : '';
+
+    const { anos } = diffDatas(input.value);
+    campoIdade.value = anos >= 0 ? `${anos} ano(s)` : '';
   }
 
   function calcularTempoEntrada() {
+    const input       = document.getElementById('data-entrada-crianca');
+    const campoSaida  = document.getElementById('tempo-entrada-crianca');
 
-    const input =
-      document.getElementById('data-entrada-crianca');
+    if (!input.value) { campoSaida.value = ''; return; }
 
-    const campoEntrada =
-      document.getElementById('tempo-entrada-crianca');
-
-    if (!input.value) {
-      campoEntrada.value = '';
-      return;
-    }
-
-    const entrada = new Date(input.value);
-    const hoje = new Date();
-
-    let anos = hoje.getFullYear() - entrada.getFullYear();
-    let meses = hoje.getMonth() - entrada.getMonth();
-    let dias = hoje.getDate() - entrada.getDate();
-
-    if (dias < 0) {
-
-      meses--;
-
-      const ultimoMes = new Date(
-        hoje.getFullYear(),
-        hoje.getMonth(),
-        0
-      );
-
-      dias += ultimoMes.getDate();
-    }
-
-    if (meses < 0) {
-      anos--;
-      meses += 12;
-    }
-
-    campoEntrada.value =
-      `${anos} ano(s), ${meses} mes(es) e ${dias} dia(s)`;
+    const { anos, meses, dias } = diffDatas(input.value);
+    campoSaida.value = `${anos} ano(s), ${meses} mês(es) e ${dias} dia(s)`;
   }
 
-  // Controla required e visibilidade das seções de responsável
   function toggleResponsavel() {
     const tipo = document.getElementById('tipo_responsavel').value;
 
-    // Campos mãe
-    const nomeMae = document.getElementById('nome-mae');
-    const cpfMae = document.getElementById('cpf-mae');
-    const badgeMae = document.getElementById('badge-mae-opcional');
-
-    // Campos pai
-    const nomePai = document.getElementById('nome-pai');
-    const cpfPai = document.getElementById('cpf-pai');
-    const badgePai = document.getElementById('badge-pai-opcional');
-
-    // Seção outro
-    const secaoOutro = document.getElementById('secao-responsavel-extra');
-    const nomeOutro = document.getElementById('nome-responsavel');
-    const cpfOutro = document.getElementById('cpf-responsavel');
-    const grauOutro = document.getElementById('grau-parentesco-responsavel');
+    const campos = {
+      mae:  { nome: 'nome-mae',         cpf: 'cpf-mae',         badge: 'badge-mae-opcional' },
+      pai:  { nome: 'nome-pai',         cpf: 'cpf-pai',         badge: 'badge-pai-opcional' },
+      outro:{ nome: 'nome-responsavel', cpf: 'cpf-responsavel', grau: 'grau-parentesco-responsavel' },
+    };
 
     // Reseta tudo
-    nomeMae.required = false; cpfMae.required = false;
-    nomePai.required = false; cpfPai.required = false;
-    nomeOutro.required = false; cpfOutro.required = false; grauOutro.required = false;
-    badgeMae.style.display = 'none';
-    badgePai.style.display = 'none';
-    secaoOutro.style.display = 'none';
+    ['mae', 'pai'].forEach(p => {
+      document.getElementById(campos[p].nome).required  = false;
+      document.getElementById(campos[p].cpf).required   = false;
+      document.getElementById(campos[p].badge).style.display = 'none';
+    });
+    document.getElementById(campos.outro.nome).required = false;
+    document.getElementById(campos.outro.cpf).required  = false;
+    document.getElementById(campos.outro.grau).required = false;
+    document.getElementById('secao-responsavel-extra').style.display = 'none';
 
-    if (tipo === 'mae') {
-      // Mãe obrigatória, pai opcional
-      nomeMae.required = true; cpfMae.required = true;
-      badgePai.style.display = 'inline';
-    } else if (tipo === 'pai') {
-      // Pai obrigatório, mãe opcional
-      nomePai.required = true; cpfPai.required = true;
-      badgeMae.style.display = 'inline';
-    } else if (tipo === 'outro') {
-      // Outro obrigatório, mãe e pai opcionais
-      nomeOutro.required = true; cpfOutro.required = true; grauOutro.required = true;
-      secaoOutro.style.display = 'block';
-      badgeMae.style.display = 'inline';
-      badgePai.style.display = 'inline';
-    }
+    // Aplica regras conforme seleção
+    const regras = {
+      mae:   () => {
+        document.getElementById(campos.mae.nome).required = true;
+        document.getElementById(campos.mae.cpf).required  = true;
+        document.getElementById(campos.pai.badge).style.display = 'inline';
+      },
+      pai:   () => {
+        document.getElementById(campos.pai.nome).required = true;
+        document.getElementById(campos.pai.cpf).required  = true;
+        document.getElementById(campos.mae.badge).style.display = 'inline';
+      },
+      outro: () => {
+        document.getElementById(campos.outro.nome).required = true;
+        document.getElementById(campos.outro.cpf).required  = true;
+        document.getElementById(campos.outro.grau).required = true;
+        document.getElementById('secao-responsavel-extra').style.display = 'block';
+        document.getElementById(campos.mae.badge).style.display = 'inline';
+        document.getElementById(campos.pai.badge).style.display = 'inline';
+      },
+    };
+
+    regras[tipo]?.();
   }
 </script>
