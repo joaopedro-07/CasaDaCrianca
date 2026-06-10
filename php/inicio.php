@@ -29,10 +29,12 @@ $percentual = $totalRegistrado > 0
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/login.css">
+    <script src="../js/modal_cadastro.js"></script>
 </head>
 
 <body class='body-inicio'>
   <?php include 'sidebar.php'; ?>
+  <?php include 'modal_cadastro_crianca.php'; ?>
   
     <main class="main-container">
       <?php include 'header.php'; ?>
@@ -45,7 +47,7 @@ $percentual = $totalRegistrado > 0
                     <p style="color: var(--text-muted); font-size: 14px;">Gerencie as informações e cadastros da instituição.</p>
                 </div>
                 <div style="display: flex; gap: 12px;">
-                    <a href="renda_beneficios.php">
+                    <a href="estatisticas_criancas.php" style="text-decoration: none;">
                         <button class="btn btn-secondary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column">
                                 <path d="M3 3v18h18"/>
@@ -57,7 +59,7 @@ $percentual = $totalRegistrado > 0
                         </button>
                     </a>
 
-                    <button class="btn-novo" onclick="document.getElementById('overlay').classList.add('open')">
+                    <button class="btn btn-primary" onclick="document.getElementById('modalOverlay').style.display='flex'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
                             <path d="M5 12h14"/>
                             <path d="M12 5v14"/>

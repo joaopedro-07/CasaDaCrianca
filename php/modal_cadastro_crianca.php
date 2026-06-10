@@ -1,541 +1,396 @@
-<form action="processa-cadastro-crianca.php" method="POST">
-  <div class="overlay" id="overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-header-left">
-          <div class="modal-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <line x1="19" y1="8" x2="19" y2="14" />
-              <line x1="22" y1="11" x2="16" y2="11" />
-            </svg>
-          </div>
-          <div>
-            <h2>Cadastrar usuário</h2>
-            <p class="modal-header-sub">Preencha todos os campos obrigatórios</p>
-          </div>
-        </div>
-        <button type="button" class="btn-fechar"
-          onclick="document.getElementById('overlay').classList.remove('open')">×</button>
+<?php
+require_once 'processa-cadastro-crianca.php';
+
+extract(ChildDataValidator::fromPost($_POST));
+extract(AddressValidator::fromPost($_POST));
+extract(SocioeconomicValidator::fromPost($_POST));
+extract(GuardianValidator::fromPost($_POST));
+?>
+<div class="overlay" id="modalOverlay" style="display:none">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+ 
+    <!-- HEADER -->
+    <div class="modal-header">
+      <div class="header-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" st  roke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
       </div>
+      <span class="modal-title" id="modalTitle">Cadastrar Criança</span>
+      <button class="btn-close" onclick="closeModal()" aria-label="Fechar">×</button>
+    </div>
+ 
+    <!-- TABS -->
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tab-1" role="tab" onclick="goToStep(1)">Identificação</button>
+      <button class="tab" id="tab-2" role="tab" onclick="goToStep(2)">Responsáveis</button>
+      <button class="tab" id="tab-3" role="tab" onclick="goToStep(3)">Endereço</button>
+      <button class="tab" id="tab-4" role="tab" onclick="goToStep(4)">Socioeconômico</button>
+    </div>
+ 
+    <!-- FORM -->
+    <form id="cadastroForm" action="processa-cadastro-crianca.php" method="POST">
+    <div class="modal-body">
+ 
+      <!-- STEP 1: IDENTIFICAÇÃO -->
+      <div class="step active" id="step-1">
+        <p class="step-title">Identificação</p>
+        <div class="form-grid">
+ 
+          <div class="field full">
+            <label>Nome completo *</label>
+            <input type="text" name="nome_completo" id="nome_completo" placeholder="Digite o nome completo" required>
+            <span class="error-msg">Campo obrigatório</span>
+          </div>
+ 
+          <div class="field">
+            <label>Apelido / Nome social</label>
+            <input type="text" name="nome_social" placeholder="Digite o apelido">
+          </div>
+ 
+          <div class="field">
+            <label>Data de nascimento *</label>
+            <input type="date" name="data_nascimento" id="data_nascimento" required onchange="calcularIdade()">
+            <span class="error-msg">Campo obrigatório</span>
+          </div>
+ 
+          <div class="field">
+            <label>Idade</label>
+            <div class="computed" id="campo_idade">—</div>
+          </div>
+ 
+          <div class="field">
+            <label>Sexo *</label>
+            <select name="sexo" required>
+              <option value="">Selecione</option>
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+              <option value="O">Outro</option>
+            </select>
+          </div>
+ 
+          <div class="field">
+            <label>Estado civil</label>
+            <input type="text" name="estado_civil" placeholder="Estado civil">
+          </div>
+ 
+          <div class="field">
+            <label>Nacionalidade</label>
+            <input type="text" name="nacionalidade" placeholder="Brasileira" value="Brasileira">
+          </div>
+ 
+          <div class="field">
+            <label>Naturalidade</label>
+            <input type="text" name="naturalidade" placeholder="Cidade de nascimento">
+          </div>
+ 
+          <div class="field">
+            <label>Nome da mãe</label>
+            <input type="text" name="nome_mae" placeholder="Nome completo da mãe">
+          </div>
+ 
+          <div class="field">
+            <label>Nome do pai</label>
+            <input type="text" name="nome_pai" placeholder="Nome completo do pai">
+          </div>
+ 
+          <div class="field">
+            <label>CPF</label>
+            <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
+          </div>
+ 
+          <div class="field">
+            <label>NIS / PIS</label>
+            <input type="text" name="nis" placeholder="Número NIS">
+          </div>
+ 
+          <div class="field">
+            <label>Profissão</label>
+            <input type="text" name="profissao" placeholder="Digite a profissão">
+          </div>
+ 
+          <div class="field">
+            <label>Escolaridade</label>
+            <select name="escolaridade">
+              <option value="">Selecione</option>
+              <option value="ei">Educação Infantil</option>
+              <option value="ef1">Ensino Fund. I</option>
+              <option value="ef2">Ensino Fund. II</option>
+              <option value="em">Ensino Médio</option>
+              <option value="sup">Superior</option>
+              <option value="na">Não se aplica</option>
+            </select>
+          </div>
+ 
+          <div class="field">
+            <label>Data de entrada</label>
+            <input type="date" name="data_entrada" id="data_entrada" onchange="calcularTempoEntrada()">
+          </div>
+ 
+          <div class="field">
+            <label>Tempo de entrada</label>
+            <div class="computed" id="campo_tempo_entrada">—</div>
+          </div>
+ 
+          <div class="field">
+            <label>Nº Prontuário</label>
+            <input type="text" name="num_prontuario" placeholder="Número do prontuário">
+          </div>
 
-      <div class="form-body">
-        <div class="steps-bar">
-          <button type="button" class="step-tab active" onclick="goStep(0)">1 · Identificação</button>
-          <button type="button" class="step-tab" onclick="goStep(1)">2 · Responsáveis</button>
-          <button type="button" class="step-tab" onclick="goStep(2)">3 · Endereço</button>
-          <button type="button" class="step-tab" onclick="goStep(3)">4 · Socioeconômico</button>
         </div>
-
-        <!-- STEP 0 - Identificação -->
-        <div class="form-section active" id="step-0">
-          <div class="container-titulo-modal">
-            <p class="section-title">Identificação da criança</p>
+      </div>
+ 
+      <!-- STEP 2: RESPONSÁVEIS -->
+      <div class="step" id="step-2">
+        <p class="step-title">Responsáveis</p>
+        <div class="form-grid">
+ 
+          <p class="section-label">Responsável principal</p>
+ 
+          <div class="field full">
+            <label>Nome do responsável *</label>
+            <input type="text" name="responsavel_nome" placeholder="Nome completo do responsável" required>
           </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label class="label-form-cadastro">Nº Matrícula</label>
-              <input name="matricula" class="input-form-cadastro" type="number" placeholder="Ex: 100023" required>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">NIS</label>
-              <input name="nis" class="input-form-cadastro" type="text" placeholder="Número de Identificação Social"
-                required>
-            </div>
+ 
+          <div class="field">
+            <label>Parentesco *</label>
+            <select name="responsavel_parentesco" required>
+              <option value="">Selecione</option>
+              <option value="mae">Mãe</option>
+              <option value="pai">Pai</option>
+              <option value="avo">Avó / Avô</option>
+              <option value="tio">Tio / Tia</option>
+              <option value="irmao">Irmão / Irmã</option>
+              <option value="outro">Outro</option>
+            </select>
           </div>
-          <div class="form-row col-1">
-            <div class="form-field">
-              <label class="label-form-cadastro">Nome da criança</label>
-              <input name="nome-crianca" class="input-form-cadastro" type="text" placeholder="Nome completo" required>
-            </div>
+ 
+          <div class="field">
+            <label>Telefone *</label>
+            <input type="tel" name="responsavel_telefone" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraTel(this)">
           </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label class="label-form-cadastro">CPF da criança</label>
-              <input name="cpf-crianca" class="input-form-cadastro" type="text" placeholder="000.000.000-00" required>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">Gênero</label>
-              <select name="genero" class="input-form-cadastro" required>
-                <option value="" disabled selected>Selecione o gênero</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Não-binário">Não-binário</option>
-                <option value="Não informado">Prefiro não informar</option>
-              </select>
-            </div>
+ 
+          <div class="field">
+            <label>E-mail</label>
+            <input type="email" name="responsavel_email" placeholder="email@exemplo.com">
           </div>
-
-          <!-- NOVO: Gênero e Idade -->
-          <div class="form-row">
-            <div class="form-field">
-              <label class="label-form-cadastro">Data de nascimento</label>
-              <input name="data-nasc-crianca" id="data-nasc-crianca" class="input-form-cadastro" type="date" required
-                onchange="calcularIdade()">
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">Idade</label>
-              <input name="idade" id="idade-crianca" class="input-form-cadastro" type="text"
-                placeholder="Calculada automaticamente" readonly>
-            </div>
+ 
+          <div class="field">
+            <label>CPF do responsável</label>
+            <input type="text" name="responsavel_cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
           </div>
-
-          <div class="form-row">
-            <div class="form-field">
-              <label class="label-form-cadastro">Estado de nascimento</label>
-
-              <select name="estado-nasc-crianca" id="estado" class="input-form-cadastro" required>
-                <option value="">Selecione o estado</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">
-                Cidade de nascimento
-              </label>
-
-              <select id="cidadeNascimento" name="cidade-nasc-crianca" class="input-form-cadastro" required>
-                <option value="">Selecione uma cidade</option>
-              </select>
-            </div>
-
-            <div class="form-field">
-              <label class="label-form-cadastro">
-                Data de entrada
-              </label>
-
-              <input name="data-entrada-crianca" class="input-form-cadastro" type="date" id="data-entrada-crianca"
-                required onchange="calcularTempoEntrada()">
-            </div>
-
-            <div class="form-field">
-              <label class="label-form-cadastro">
-                Quanto tempo desde a entrada
-              </label>
-
-              <input name="entrada-tempo" id="tempo-entrada-crianca" class="input-form-cadastro" type="text"
-                placeholder="Calculada automaticamente" readonly>
-            </div>
+ 
+          <!-- Toggle Responsável 2 -->
+          <div class="toggle-row">
+            <label class="toggle" for="toggle_resp2">
+              <input type="checkbox" id="toggle_resp2" onchange="toggleResponsavel2(this)">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Adicionar segundo responsável</span>
           </div>
-          <div class="form-row col-1">
-            <div class="form-field">
-              <label class="label-form-cadastro">Status</label>
-              <select name="status" class="input-form-cadastro">
-                <option value="" disabled selected>Selecione o status</option>
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 1 - Responsáveis -->
-        <div class="form-section" id="step-1">
-          <div class="container-titulo-modal">
-            <p class="section-title">Vínculo de responsabilidade</p>
-          </div>
-          <div class="form-row col-1">
-            <div class="form-field">
-              <label class="label-form-cadastro">Responsável legal</label>
-              <select name="tipo_responsavel" id="tipo_responsavel" class="input-form-cadastro" required
-                onchange="toggleResponsavel()">
-                <option value="" disabled selected>Selecione quem é o responsável legal</option>
-                <option value="mae">Mãe</option>
-                <option value="pai">Pai</option>
-                <option value="outro">Outra pessoa (preencher abaixo)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Mãe -->
-          <div id="secao-mae">
-            <div class="container-titulo-modal">
-              <p class="section-title" id="titulo-mae">Identificação da mãe <span class="badge-opcional"
-                  id="badge-mae-opcional"
-                  style="display:none; font-size:11px; background:#e5e7eb; color:#6b7280; padding:2px 7px; border-radius:10px; font-weight:500;">Opcional</span>
-              </p>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="label-form-cadastro">Nome da mãe</label>
-                <input name="nome-mae" id="nome-mae" class="input-form-cadastro" type="text"
-                  placeholder="Nome completo">
+ 
+          <div class="responsavel-section" id="responsavel2-section" style="display:none">
+            <div class="form-grid">
+              <p class="section-label" style="margin-top:0">Segundo responsável</p>
+ 
+              <div class="field full">
+                <label>Nome do responsável</label>
+                <input type="text" name="responsavel2_nome" placeholder="Nome completo">
               </div>
-              <div class="form-field">
-                <label class="label-form-cadastro">CPF da mãe</label>
-                <input name="cpf-mae" id="cpf-mae" class="input-form-cadastro" type="text" placeholder="000.000.000-00">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="label-form-cadastro">Telefone da mãe</label>
-                <input name="tel-mae" id="tel-mae" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000">
-              </div>
-              <div class="form-field">
-                <label class="label-form-cadastro">Profissão da mãe</label>
-                <select name="profissao-mae" class="input-form-cadastro">
-                  <option value="" disabled selected>Selecione a profissão</option>
-                  <option value="Trabalha em casa">Trabalha em casa (afazeres domésticos)</option>
-                  <option value="Empregado formal">Empregado formal (CLT / funcionário público)</option>
-                  <option value="Profissional liberal ou autônomo">Profissional liberal ou autônomo</option>
-                  <option value="Trabalhador rural">Trabalhador rural</option>
-                  <option value="Desempregado">Desempregado / em busca de trabalho</option>
-                  <option value="Aposentado">Aposentado / Pensionista</option>
-                  <option value="Não sabe/Não informado">Não sabe / Não informado</option>
+ 
+              <div class="field">
+                <label>Parentesco</label>
+                <select name="responsavel2_parentesco">
+                  <option value="">Selecione</option>
+                  <option value="mae">Mãe</option>
+                  <option value="pai">Pai</option>
+                  <option value="avo">Avó / Avô</option>
+                  <option value="tio">Tio / Tia</option>
+                  <option value="outro">Outro</option>
                 </select>
               </div>
-            </div>
-          </div>
-
-          <!-- Pai -->
-          <div id="secao-pai">
-            <div class="container-titulo-modal">
-              <p class="section-title">Identificação do pai <span class="badge-opcional" id="badge-pai-opcional"
-                  style="display:none; font-size:11px; background:#e5e7eb; color:#6b7280; padding:2px 7px; border-radius:10px; font-weight:500;">Opcional</span>
-              </p>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="label-form-cadastro">Nome do pai</label>
-                <input name="nome-pai" id="nome-pai" class="input-form-cadastro" type="text"
-                  placeholder="Nome completo">
-              </div>
-              <div class="form-field">
-                <label class="label-form-cadastro">CPF do pai</label>
-                <input name="cpf-pai" id="cpf-pai" class="input-form-cadastro" type="text" placeholder="000.000.000-00">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="label-form-cadastro">Telefone do pai</label>
-                <input name="tel-pai" id="tel-pai" class="input-form-cadastro" type="tel" placeholder="(00) 00000-0000">
-              </div>
-              <div class="form-field">
-                <label class="label-form-cadastro">Profissão do pai</label>
-                <select name="profissao-pai" class="input-form-cadastro">
-                  <option value="" disabled selected>Selecione a profissão</option>
-                  <option value="Trabalha em casa">Trabalha em casa (afazeres domésticos)</option>
-                  <option value="Empregado formal">Empregado formal (CLT / funcionário público)</option>
-                  <option value="Profissional liberal ou autônomo">Profissional liberal ou autônomo</option>
-                  <option value="Trabalhador rural">Trabalhador rural</option>
-                  <option value="Desempregado">Desempregado / em busca de trabalho</option>
-                  <option value="Aposentado">Aposentado / Pensionista</option>
-                  <option value="Não sabe/Não informado">Não sabe / Não informado</option>
-                </select>
+ 
+              <div class="field">
+                <label>Telefone</label>
+                <input type="tel" name="responsavel2_telefone" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraTel(this)">
               </div>
             </div>
           </div>
-
-          <!-- Outro responsável -->
-          <div id="secao-responsavel-extra" class="secao-responsavel-extra" style="display:none;">
-            <div class="container-titulo-modal">
-              <p class="section-title" style="margin-top: 0;"><span class="badge-outro">Outro</span> Dados do
-                responsável legal</p>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="label-form-cadastro">Nome do responsável</label>
-                <input name="nome-responsavel" id="nome-responsavel" class="input-form-cadastro" type="text"
-                  placeholder="Nome completo">
-              </div>
-              <div class="form-field">
-                <label class="label-form-cadastro">CPF do responsável</label>
-                <input name="cpf-responsavel" id="cpf-responsavel" class="input-form-cadastro" type="text"
-                  placeholder="000.000.000-00">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="label-form-cadastro">Telefone do responsável</label>
-                <input name="tel-responsavel" id="tel-responsavel" class="input-form-cadastro" type="tel"
-                  placeholder="(00) 00000-0000">
-              </div>
-              <div class="form-field">
-                <label class="label-form-cadastro">Grau de Parentesco</label>
-                <input name="grau-parentesco-responsavel" id="grau-parentesco-responsavel" class="input-form-cadastro"
-                  type="text" placeholder="Digite o grau de parentesco do responsável">
-              </div>
-            </div>
-            <div class="form-row col-1">
-              <div class="form-field">
-                <label class="label-form-cadastro">Profissão do responsável</label>
-                <select name="profissao-responsavel" class="input-form-cadastro">
-                  <option value="" disabled selected>Selecione a profissão</option>
-                  <option value="Trabalha em casa">Trabalha em casa (afazeres domésticos)</option>
-                  <option value="Empregado formal">Empregado formal (CLT / funcionário público)</option>
-                  <option value="Profissional liberal ou autônomo">Profissional liberal ou autônomo</option>
-                  <option value="Trabalhador rural">Trabalhador rural</option>
-                  <option value="Desempregado">Desempregado / em busca de trabalho</option>
-                  <option value="Aposentado">Aposentado / Pensionista</option>
-                  <option value="Não sabe/Não informado">Não sabe / Não informado</option>
-                </select>
-              </div>
-            </div>
-          </div>
+ 
         </div>
-
-        <!-- STEP 2 - Endereço -->
-        <div class="form-section" id="step-2">
-          <div class="container-titulo-modal">
-            <p class="section-title">Endereço residencial</p>
+      </div>
+ 
+      <!-- STEP 3: ENDEREÇO -->
+      <div class="step" id="step-3">
+        <p class="step-title">Endereço</p>
+        <div class="form-grid">
+ 
+          <div class="field">
+            <label>CEP *</label>
+            <input type="text" name="cep" id="cep" placeholder="00000-000" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCEP(this.value)" required>
           </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label class="label-form-cadastro">CEP</label>
-              <input name="cep" class="input-form-cadastro" type="text" placeholder="00000-000" required>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">Número</label>
-              <input name="numero" class="input-form-cadastro" type="text" placeholder="Nº" required>
-            </div>
+ 
+          <div class="field full">
+            <label>Logradouro *</label>
+            <input type="text" name="logradouro" id="logradouro" placeholder="Rua, Avenida, etc." required>
           </div>
-          <div class="form-row col-1">
-            <div class="form-field">
-              <label class="label-form-cadastro">Rua / Logradouro</label>
-              <input name="logradouro" class="input-form-cadastro" type="text" placeholder="Nome da rua, avenida..."
-                required>
-            </div>
+ 
+          <div class="field">
+            <label>Número</label>
+            <input type="text" name="numero" placeholder="Nº">
           </div>
-          <div class="form-row col-3">
-            <div class="form-field">
-              <label class="label-form-cadastro">Bairro</label>
-              <input name="bairro" class="input-form-cadastro" type="text" placeholder="Bairro" required>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">Cidade</label>
-              <input name="cidade" class="input-form-cadastro" type="text" placeholder="Município" required>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">UF</label>
-              <input name="uf" class="input-form-cadastro" type="text" placeholder="SP" maxlength="2" required>
-            </div>
+ 
+          <div class="field">
+            <label>Complemento</label>
+            <input type="text" name="complemento" placeholder="Apto, bloco...">
           </div>
+ 
+          <div class="field">
+            <label>Bairro *</label>
+            <input type="text" name="bairro" id="bairro" placeholder="Bairro" required>
+          </div>
+ 
+          <div class="field">
+            <label>Município *</label>
+            <input type="text" name="municipio" id="municipio" placeholder="Cidade" required>
+          </div>
+ 
+          <div class="field">
+            <label>Estado *</label>
+            <select name="estado" id="estado_uf" required>
+              <option value="">UF</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option selected>SP</option><option>SE</option><option>TO</option>
+            </select>
+          </div>
+ 
+          <div class="field">
+            <label>Zona</label>
+            <select name="zona">
+              <option value="">Selecione</option>
+              <option value="urbana">Urbana</option>
+              <option value="rural">Rural</option>
+            </select>
+          </div>
+ 
+          <div class="field full">
+            <label>Ponto de referência</label>
+            <input type="text" name="referencia" placeholder="Próximo a...">
+          </div>
+ 
+          <div class="info-card">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            <span>Digite o CEP para preencher o endereço automaticamente.</span>
+          </div>
+ 
         </div>
-
-        <!-- STEP 3 - Socioeconômico -->
-        <div class="form-section" id="step-3">
-          <div class="container-titulo-modal">
-            <p class="section-title">Informação socioeconômica</p>
+      </div>
+ 
+      <!-- STEP 4: SOCIOECONÔMICO -->
+      <div class="step" id="step-4">
+        <p class="step-title">Dados Socioeconômicos</p>
+        <div class="form-grid">
+ 
+          <div class="field">
+            <label>Renda familiar (R$)</label>
+            <input type="number" name="renda_familiar" placeholder="0,00" min="0" step="0.01">
           </div>
-          <div class="form-row col-1">
-            <div class="form-field">
-              <label class="label-form-cadastro">Renda familiar (R$)</label>
-              <input name="renda-familiar" class="input-form-cadastro" type="number" step="0.01" min="0"
-                placeholder="0,00" required>
-              <p class="field-hint">Informe o valor mensal total da família</p>
+ 
+          <div class="field">
+            <label>Nº de membros na família</label>
+            <input type="number" name="membros_familia" placeholder="Ex: 4" min="1" max="20">
+          </div>
+ 
+          <div class="field">
+            <label>Situação da moradia</label>
+            <select name="situacao_moradia">
+              <option value="">Selecione</option>
+              <option value="propria">Própria</option>
+              <option value="alugada">Alugada</option>
+              <option value="cedida">Cedida</option>
+              <option value="ocupada">Ocupada</option>
+              <option value="abrigo">Abrigo / Albergue</option>
+            </select>
+          </div>
+ 
+          <div class="field">
+            <label>Recebe benefício social</label>
+            <select name="beneficio_social" id="beneficio_social" onchange="toggleBeneficio()">
+              <option value="">Selecione</option>
+              <option value="sim">Sim</option>
+              <option value="nao">Não</option>
+            </select>
+          </div>
+ 
+          <div class="field full" id="qual_beneficio_field" style="display:none">
+            <label>Qual benefício?</label>
+            <input type="text" name="qual_beneficio" placeholder="Ex: Bolsa Família, BPC...">
+          </div>
+ 
+          <p class="section-label">Vulnerabilidades identificadas</p>
+ 
+          <div class="field full">
+            <div class="checkbox-group">
+              <label class="checkbox-option">
+                <input type="checkbox" name="vulnerabilidade[]" value="violencia"> Situação de violência
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="vulnerabilidade[]" value="trabalho_infantil"> Trabalho infantil
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="vulnerabilidade[]" value="uso_drogas"> Uso de drogas na família
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="vulnerabilidade[]" value="abandono"> Abandono / Negligência
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="vulnerabilidade[]" value="evasao_escolar"> Evasão escolar
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="vulnerabilidade[]" value="deficiencia"> Pessoa com deficiência
+              </label>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-field">
-              <label class="label-form-cadastro">Possui CadÚnico?</label>
-              <div class="radio-group">
-                <label class="radio-label"><input type="radio" name="cad-unico" value="Sim"> Sim</label>
-                <label class="radio-label"><input type="radio" name="cad-unico" value="Não"> Não</label>
-              </div>
-            </div>
-            <div class="form-field">
-              <label class="label-form-cadastro">Recebe benefício?</label>
-              <div class="radio-group">
-                <label class="radio-label"><input type="radio" name="beneficio" value="Sim"> Sim</label>
-                <label class="radio-label"><input type="radio" name="beneficio" value="Não"> Não</label>
-              </div>
-            </div>
+ 
+          <p class="section-label">Observações</p>
+ 
+          <div class="field full">
+            <label>Observações gerais</label>
+            <textarea name="observacoes" placeholder="Informações adicionais relevantes..."></textarea>
           </div>
-          <div class="form-row col-1">
-            <div class="form-field">
-              <label class="label-form-cadastro">Situação de risco social</label>
-              <select name="situacao-risco-social" class="input-form-cadastro">
-                <option value="" disabled selected>Selecione a situação de risco</option>
-                <option>I - Crianças e adolescentes com medida de proteção</option>
-                <option>II - Trabalho infantil</option>
-                <option>III - Vivência de violência ou negligência</option>
-                <option>IV - Abuso e exploração sexual</option>
-                <option>V - Crianças e adolescentes fora da escola</option>
-                <option>VI - Jovens egressos de medida socioeducativa</option>
-                <option>VII - Pessoas com deficiência (PcD)</option>
-                <option>VIII - Famílias beneficiárias de transferência de renda</option>
-                <option>IX - Pessoas em situação de rua</option>
-                <option>X - Vulnerabilidade por estigmatização</option>
-              </select>
-            </div>
+ 
+          <div class="info-card">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            <span>Ao salvar, o cadastro será enviado para análise. Você poderá editar posteriormente.</span>
           </div>
+ 
         </div>
-
-        <div class="container-footer-modal">
-          <div class="footer-left"><span id="step-indicator">Passo 1 de 4</span></div>
-          <div class="footer-right">
-            <button type="button" class="btn-cancelar" id="btn-back" onclick="navStep(-1)" style="display:none">←
-              Voltar</button>
-            <button type="button" class="btn-salvar" id="btn-next" onclick="navStep(1)">Próximo →</button>
-            <button type="submit" class="btn-salvar" id="btn-salvar" style="display:none">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Salvar usuário
-            </button>
-          </div>
-        </div>
+      </div>
+ 
+    </div>
+ 
+    <!-- FOOTER -->
+    <div class="modal-footer">
+      <span class="progress-text" id="progressText">Passo 1 de 4</span>
+      <div class="footer-actions">
+        <button type="button" class="btn btn-ghost" id="btnCancelar" onclick="closeModal()">Cancelar</button>
+        <button type="button" class="btn btn-ghost" id="btnVoltar" onclick="prevStep()" style="display:none">
+          ← Voltar
+        </button>
+        <button type="button" class="btn btn-yellow" id="btnProximo" onclick="nextStep()">
+          Próximo →
+        </button>
+        <button type="submit" class="btn btn-save" id="btnSalvar" style="display:none">
+          ✓ Salvar
+        </button>
       </div>
     </div>
+    </form>
+ 
   </div>
-</form>
-
-<script>
-  const estadoSelect = document.getElementById('estado');
-  const cidadeSelect = document.getElementById('cidadeNascimento');
-
-  // Carrega estados
-  async function carregarEstados() {
-    const response = await fetch(
-      'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome'
-    );
-
-    const estados = await response.json();
-
-    estados.forEach(estado => {
-      const option = document.createElement('option');
-
-      option.value = estado.sigla; // SP, RJ, MG...
-      option.textContent = estado.nome;
-
-      estadoSelect.appendChild(option);
-    });
-  }
-
-  // Carrega cidades baseado na UF selecionada
-  async function carregarCidades(uf) {
-
-    cidadeSelect.innerHTML =
-      '<option value="">Carregando...</option>';
-
-    const response = await fetch(
-      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`
-    );
-
-    const cidades = await response.json();
-
-    cidadeSelect.innerHTML =
-      '<option value="">Selecione uma cidade</option>';
-
-    cidades.forEach(cidade => {
-      const option = document.createElement('option');
-
-      option.value = cidade.nome;
-      option.textContent = cidade.nome;
-
-      cidadeSelect.appendChild(option);
-    });
-  }
-
-  // Evento ao trocar estado
-  estadoSelect.addEventListener('change', (event) => {
-
-    const ufSelecionada = event.target.value;
-
-    if (ufSelecionada) {
-      carregarCidades(ufSelecionada);
-    }
-  });
-
-  carregarEstados();
-
-  // Calcula idade automaticamente ao preencher data de nascimento
-  function calcularIdade() {
-    const input = document.getElementById('data-nasc-crianca');
-    const campoIdade = document.getElementById('idade-crianca');
-    if (!input.value) { campoIdade.value = ''; return; }
-    const nasc = new Date(input.value);
-    const hoje = new Date();
-    let anos = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) anos--;
-    campoIdade.value = anos >= 0 ? anos + ' ano(s)' : '';
-  }
-
-  function calcularTempoEntrada() {
-
-    const input =
-      document.getElementById('data-entrada-crianca');
-
-    const campoEntrada =
-      document.getElementById('tempo-entrada-crianca');
-
-    if (!input.value) {
-      campoEntrada.value = '';
-      return;
-    }
-
-    const entrada = new Date(input.value);
-    const hoje = new Date();
-
-    let anos = hoje.getFullYear() - entrada.getFullYear();
-    let meses = hoje.getMonth() - entrada.getMonth();
-    let dias = hoje.getDate() - entrada.getDate();
-
-    if (dias < 0) {
-
-      meses--;
-
-      const ultimoMes = new Date(
-        hoje.getFullYear(),
-        hoje.getMonth(),
-        0
-      );
-
-      dias += ultimoMes.getDate();
-    }
-
-    if (meses < 0) {
-      anos--;
-      meses += 12;
-    }
-
-    campoEntrada.value =
-      `${anos} ano(s), ${meses} mes(es) e ${dias} dia(s)`;
-  }
-
-  // Controla required e visibilidade das seções de responsável
-  function toggleResponsavel() {
-    const tipo = document.getElementById('tipo_responsavel').value;
-
-    // Campos mãe
-    const nomeMae = document.getElementById('nome-mae');
-    const cpfMae = document.getElementById('cpf-mae');
-    const badgeMae = document.getElementById('badge-mae-opcional');
-
-    // Campos pai
-    const nomePai = document.getElementById('nome-pai');
-    const cpfPai = document.getElementById('cpf-pai');
-    const badgePai = document.getElementById('badge-pai-opcional');
-
-    // Seção outro
-    const secaoOutro = document.getElementById('secao-responsavel-extra');
-    const nomeOutro = document.getElementById('nome-responsavel');
-    const cpfOutro = document.getElementById('cpf-responsavel');
-    const grauOutro = document.getElementById('grau-parentesco-responsavel');
-
-    // Reseta tudo
-    nomeMae.required = false; cpfMae.required = false;
-    nomePai.required = false; cpfPai.required = false;
-    nomeOutro.required = false; cpfOutro.required = false; grauOutro.required = false;
-    badgeMae.style.display = 'none';
-    badgePai.style.display = 'none';
-    secaoOutro.style.display = 'none';
-
-    if (tipo === 'mae') {
-      // Mãe obrigatória, pai opcional
-      nomeMae.required = true; cpfMae.required = true;
-      badgePai.style.display = 'inline';
-    } else if (tipo === 'pai') {
-      // Pai obrigatório, mãe opcional
-      nomePai.required = true; cpfPai.required = true;
-      badgeMae.style.display = 'inline';
-    } else if (tipo === 'outro') {
-      // Outro obrigatório, mãe e pai opcionais
-      nomeOutro.required = true; cpfOutro.required = true; grauOutro.required = true;
-      secaoOutro.style.display = 'block';
-      badgeMae.style.display = 'inline';
-      badgePai.style.display = 'inline';
-    }
-  }
-</script>
+</div>
