@@ -14,16 +14,13 @@
     --yellow-dark: #d4820a;
     --purple: #5b4fcf;
     --purple-hover: #4a3fbf;
-    --white: #ffffff;
     --text-dark: #3a3a3a;
-    --text-muted: #666666;
     --deco: rgba(200, 140, 20, 0.18);
     --deco-color: #d4a017;
     /* ------------------------------- */
     /* Cores Início */
     --primary: #FFCC00;
     --primary-hover: #E6B800;
-    --bg-sidebar: #fff;
     --bg-main: #F8FAFC;
     --text-main: #1E293B;
     --text-muted: #64748B;
@@ -206,13 +203,25 @@
 /* Estilização Sidebar */
 .sidebar {
     width: 260px;
-    background-color: var(--bg-sidebar);
+    background-color: var(--white);
+    position: relative;
     color: var(--white);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 24px 16px;
     z-index: 10;
+    padding: 24px 16px;
+}
+
+.sidebar::after {
+    content: "";
+    position: absolute;
+    top: 70px;      /* distância do topo */
+    right: 0;
+    width: 1px;
+    height: 900px;  /* altura da "borda" */
+    background-color: var(--border-color);
 }
 
 .brand {
@@ -232,7 +241,7 @@
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    color: var(--bg-sidebar);
+    color: var(--white);
     margin-bottom: 12px;
     box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
 }
@@ -269,7 +278,7 @@
 
 .menu-link:hover,
 .menu-item.active .menu-link {
-    color: var(--bg-sidebar);
+    color: var(--white);
     background-color: var(--primary);
 }
 
@@ -296,23 +305,6 @@
 }
 
 /* ------------------------------- */
-/* Estilização Inicio */
-
-.body-inicio {
-    background-color: var(--bg-main);
-    color: var(--text-main);
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-}
-
-.main-container {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
 /* HEADER */
 .header {
     background-color: var(--white);
@@ -351,6 +343,22 @@
     font-weight: 600;
     display: block;
     white-space: nowrap;
+}
+/* ------------------------- */
+/* Estilização Inicio */
+.body-inicio {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 /* Content Area */
@@ -481,11 +489,10 @@
     max-width: 450px;
 }
 
-.search-box i {
+.search-icon  {
     position: absolute;
     left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 30%;
     color: var(--text-muted);
 }
 
