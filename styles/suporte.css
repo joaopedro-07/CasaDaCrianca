@@ -1,0 +1,205 @@
+/* =========================================================
+   SUPORTE - Casa da Criança
+   Paleta: amarelo #fcc404 | fundo #f8fafc | inputs #e8ebee
+   ========================================================= */
+
+.main-suporte {
+  min-height: calc(100vh - 64px);
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.suporte-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  max-width: 980px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------- Coluna informativa ---------- */
+.suporte-info {
+  background: linear-gradient(155deg, #fcc404, #ffd95e);
+  padding: 44px 36px;
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.suporte-info-icone {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #b88a00;
+  margin-bottom: 22px;
+}
+
+.suporte-info h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.suporte-info p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #5a4a00;
+  margin-bottom: 26px;
+}
+
+.suporte-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.suporte-lista li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.suporte-lista i {
+  width: 32px;
+  height: 32px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b88a00;
+}
+
+/* ---------- Formulário ---------- */
+.suporte-card {
+  padding: 44px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.suporte-titulo {
+  font-size: 28px;
+  font-weight: 900;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.suporte-subtitulo {
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+  margin: 6px 0 26px;
+}
+
+.suporte-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.suporte-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.suporte-campo label {
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.campo-opcional {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.suporte-form input[type="text"],
+.suporte-form input[type="email"],
+.suporte-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 10px;
+  background-color: #e8ebee;
+  color: #333;
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.suporte-form input:focus,
+.suporte-form textarea:focus {
+  box-shadow: 0 0 0 2px #fcc404;
+}
+
+.suporte-form textarea {
+  height: 120px;
+  resize: none;
+}
+
+.suporte-form input::placeholder,
+.suporte-form textarea::placeholder {
+  color: #94a3b8;
+}
+
+.campo-honeypot {
+  display: none !important;
+}
+
+.btn-suporte {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #fcc404;
+  color: #1a1a1a;
+  font-weight: 800;
+  padding: 14px;
+  border: none;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-suporte:hover {
+  background-color: #e5b203;
+  transform: translateY(-2px);
+}
+
+.suporte-rodape {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 820px) {
+  .suporte-grid {
+    grid-template-columns: 1fr;
+    max-width: 540px;
+  }
+
+  .suporte-info {
+    padding: 32px;
+  }
+}
