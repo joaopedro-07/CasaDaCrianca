@@ -1,79 +1,120 @@
-<!-- <?php
+<?php
 include 'verificar_login.php';
 
-$id = $_SESSION['admin_id'];
+// Busca os dados do administrador logado (tudo ligado ao usuário da sessão)
 $sql = "SELECT nome, email, cpf, genero, telefone FROM administradores WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$admin = $resultado->fetch_assoc();
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $id_logado);
+mysqli_stmt_execute($stmt);
+$resultado = mysqli_stmt_get_result($stmt);
+$admin = mysqli_fetch_assoc($resultado);
+
+// Iniciais para o avatar
+$nomeAdmin = $admin['nome'] ?? 'Admin';
+$partes = preg_split('/\s+/', trim($nomeAdmin));
+$iniciais = strtoupper(substr($partes[0], 0, 1) . (isset($partes[1]) ? substr($partes[1], 0, 1) : ''));
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/perfil.css">
-    <title>Perfil de Usuário - Casa da Criança</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Perfil - Casa da Criança</title>
 </head>
-<body>
+
+<body class="body-padrao">
     <?php include 'sidebar.php'; ?>
-    <div class="main-wrapper">
 
-        <main class="content">
-            <div class="top-header" style="display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin-bottom: 20px;">
-                <button type="button" onclick="abrirModal('modalCadastro')" class="btn-novo-adm" style="background: #ffc107; color: white; padding: 10px 15px; border-radius: 10px; border:none; cursor:pointer; font-weight: bold; font-size: 13px;">
-                    <i class="fa-solid fa-user-plus"></i> Novo Administrador
-                </button>
-                <a href="logout.php" onclick="return confirm('Sair do sistema?')" class="logout-icon" style="font-size: 24px; color: #333;">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </a>
-            </div>
+    <div class="container-geral">
+        <?php include 'header.php'; ?>
 
-            <h1 style="margin-bottom: 30px;">Perfil de Usuário</h1>
+        <main class="main-perfil">
+            <div class="perfil-wrapper">
 
-            <div class="profile-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 40px;">
-                <div class="user-avatar" style="font-size: 70px; color: #000;">
-                    <i class="fa-solid fa-circle-user"></i>
-                </div>
-                <div class="user-names">
-                    <h2 style="font-size: 22px; margin: 0;"><?php echo $admin['nome']; ?></h2>
-                    <p style="color: #666; margin: 5px 0;"><?php echo $admin['email']; ?></p>
-                </div>
-                <button type="button" onclick="abrirModal('modalEdicao')" class="btn-editar" style="background: #4a90e2; color: white; padding: 10px 25px; border-radius: 8px; border:none; cursor:pointer; font-weight: bold; margin-left: 20px;">Editar Perfil</button>
-            </div>
+                <!-- Cartão principal do perfil -->
+                <section class="card-perfil">
+                    <div class="card-perfil-topo"></div>
 
-            <div class="profile-grid">
-                <div class="field-group"><label>Nome</label><input type="text" value="<?php echo $admin['nome']; ?>" readonly></div>
-                <div class="field-group"><label>Email</label><input type="text" value="<?php echo $admin['email']; ?>" readonly></div>
-                <div class="field-group"><label>Gênero</label><input type="text" value="<?php echo $admin['genero']; ?>" readonly></div>
-                <div class="field-group"><label>Senha</label><input type="text" value="****************" readonly></div>
-                <div class="field-group"><label>CPF</label><input type="text" value="<?php echo $admin['cpf']; ?>" readonly></div>
-                <div class="field-group"><label>Telefone</label><input type="text" value="<?php echo $admin['telefone']; ?>" readonly></div>
-            </div>
+                    <div class="perfil-identidade">
+                        <div class="perfil-avatar"><?php echo htmlspecialchars($iniciais); ?></div>
+                        <div class="perfil-nome-bloco">
+                            <h1 class="perfil-nome"><?php echo htmlspecialchars($nomeAdmin); ?></h1>
+                            <p class="perfil-email"><?php echo htmlspecialchars($admin['email'] ?? ''); ?></p>
+                            <span class="perfil-tag"><i class="fa-solid fa-shield-halved"></i> Administrador</span>
+                        </div>
+                        <div class="perfil-acoes">
+                            <button type="button" class="btn-perfil btn-perfil-amarelo" onclick="abrirModal('modalCadastro')">
+                                <i class="fa-solid fa-user-plus"></i> Novo Administrador
+                            </button>
+                            <button type="button" class="btn-perfil btn-perfil-escuro" onclick="abrirModal('modalEdicao')">
+                                <i class="fa-solid fa-pen"></i> Editar Perfil
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
-            <div class="danger-zone">
-                <h3><i class="fa-solid fa-triangle-exclamation"></i> Zona de Exclusão</h3>
-                <p>Cuidado! Ao clicar no botão abaixo, sua conta será removida permanentemente.</p>
-                <a href="excluir_conta.php" class="btn-excluir" onclick="return confirm('Deseja realmente EXCLUIR sua conta?')">Excluir Conta</a>
+                <!-- Informações pessoais -->
+                <section class="card-info">
+                    <h2 class="card-info-titulo"><i class="fa-solid fa-id-card"></i> Informações Pessoais</h2>
+
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa-solid fa-user"></i> Nome</span>
+                            <span class="info-valor"><?php echo htmlspecialchars($admin['nome'] ?? '—'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa-solid fa-envelope"></i> E-mail</span>
+                            <span class="info-valor"><?php echo htmlspecialchars($admin['email'] ?? '—'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa-solid fa-venus-mars"></i> Gênero</span>
+                            <span class="info-valor"><?php echo htmlspecialchars($admin['genero'] ?: '—'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa-solid fa-phone"></i> Telefone</span>
+                            <span class="info-valor"><?php echo htmlspecialchars($admin['telefone'] ?: '—'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa-solid fa-address-card"></i> CPF</span>
+                            <span class="info-valor"><?php echo htmlspecialchars($admin['cpf'] ?? '—'); ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label"><i class="fa-solid fa-lock"></i> Senha</span>
+                            <span class="info-valor">••••••••••••</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Zona de exclusão -->
+                <section class="card-perigo">
+                    <div class="perigo-texto">
+                        <h3><i class="fa-solid fa-triangle-exclamation"></i> Zona de Exclusão</h3>
+                        <p>Ao excluir sua conta, todos os seus dados de acesso serão removidos permanentemente.</p>
+                    </div>
+                    <a href="excluir_conta.php" class="btn-excluir-conta" id="btnExcluir">Excluir Conta</a>
+                </section>
+
             </div>
         </main>
     </div>
 
-    <div id="modalCadastro" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="fecharModal('modalCadastro')">&times;</span>
-            <h2>Novo Administrador</h2>
-            <form action="cadastrar_adm_action.php" method="POST">
-                <div class="field-group"><label>Nome</label><input type="text" name="nome" required></div>
-                <div class="field-group"><label>Email</label><input type="email" name="email" required></div>
-                <div class="field-group"><label>CPF</label><input type="text" name="cpf" required></div>
-                
-                <div class="field-group">
+    <!-- Modal: Novo Administrador -->
+    <div id="modalCadastro" class="modal-perfil">
+        <div class="modal-perfil-conteudo">
+            <button class="modal-fechar" onclick="fecharModal('modalCadastro')">&times;</button>
+            <h2 class="modal-titulo"><i class="fa-solid fa-user-plus"></i> Novo Administrador</h2>
+            <form action="cadastrar_adm_action.php" method="POST" class="modal-form">
+                <div class="modal-campo"><label>Nome</label><input type="text" name="nome" placeholder="Nome completo" required></div>
+                <div class="modal-campo"><label>E-mail</label><input type="email" name="email" placeholder="email@exemplo.com" required></div>
+                <div class="modal-campo"><label>CPF</label><input type="text" name="cpf" placeholder="000.000.000-00" required></div>
+                <div class="modal-campo">
                     <label>Gênero</label>
-                    <select name="genero" style="width:100%; padding:10px; border-radius:8px;" required>
+                    <select name="genero" required>
                         <option value="">Selecione</option>
                         <option value="Masculino">Masculino</option>
                         <option value="Feminino">Feminino</option>
@@ -81,39 +122,49 @@ $admin = $resultado->fetch_assoc();
                         <option value="Prefiro não dizer">Prefiro não dizer</option>
                     </select>
                 </div>
-                <div class="field-group"><label>Telefone</label><input type="text" name="telefone" required></div>
-                
-                <div class="field-group"><label>Senha</label><input type="password" name="senha" required></div>
-                <button type="submit" class="btn-salvar-modal" style="background:#ffc107">Cadastrar</button>
+                <div class="modal-campo"><label>Telefone</label><input type="text" name="telefone" placeholder="(00) 00000-0000" required></div>
+                <div class="modal-campo"><label>Senha</label><input type="password" name="senha" placeholder="Crie uma senha" required></div>
+                <button type="submit" class="btn-modal-salvar btn-modal-amarelo">Cadastrar Administrador</button>
             </form>
         </div>
     </div>
 
-    <div id="modalEdicao" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="fecharModal('modalEdicao')">&times;</span>
-            <h2>Editar Meus Dados</h2>
-            <form action="editar_perfil_action.php" method="POST">
-                <div class="field-group"><label>Telefone</label><input type="text" name="telefone" value="<?php echo $admin['telefone']; ?>"></div>
-                <div class="field-group">
+    <!-- Modal: Editar Perfil -->
+    <div id="modalEdicao" class="modal-perfil">
+        <div class="modal-perfil-conteudo">
+            <button class="modal-fechar" onclick="fecharModal('modalEdicao')">&times;</button>
+            <h2 class="modal-titulo"><i class="fa-solid fa-pen"></i> Editar Meus Dados</h2>
+            <form action="editar_perfil_action.php" method="POST" class="modal-form">
+                <div class="modal-campo">
+                    <label>Telefone</label>
+                    <input type="text" name="telefone" value="<?php echo htmlspecialchars($admin['telefone'] ?? ''); ?>">
+                </div>
+                <div class="modal-campo">
                     <label>Gênero</label>
-                    <select name="genero" style="width:100%; padding:10px; border-radius:8px;">
-                        <option value="Masculino" <?php echo ($admin['genero'] == 'Masculino') ? 'selected' : ''; ?>>Masculino</option>
-                        <option value="Feminino" <?php echo ($admin['genero'] == 'Feminino') ? 'selected' : ''; ?>>Feminino</option>
-                        <option value="Outro" <?php echo ($admin['genero'] == 'Outro') ? 'selected' : ''; ?>>Outro</option>
-                        <option value="Prefiro não dizer" <?php echo ($admin['genero'] == 'Prefiro não dizer') ? 'selected' : ''; ?>>Prefiro não dizer</option>
+                    <select name="genero">
+                        <?php
+                        $generos = ['Masculino', 'Feminino', 'Outro', 'Prefiro não dizer'];
+                        foreach ($generos as $g) {
+                            $sel = ($admin['genero'] ?? '') === $g ? 'selected' : '';
+                            echo "<option value=\"$g\" $sel>$g</option>";
+                        }
+                        ?>
                     </select>
                 </div>
-                <div class="field-group"><label>Nova Senha (opcional)</label><input type="password" name="nova_senha"></div>
-                <button type="submit" class="btn-salvar-modal">Salvar Alterações</button>
+                <div class="modal-campo">
+                    <label>Nova Senha <span class="campo-opcional">(opcional)</span></label>
+                    <input type="password" name="nova_senha" placeholder="Deixe em branco para manter a atual">
+                </div>
+                <button type="submit" class="btn-modal-salvar btn-modal-escuro">Salvar Alterações</button>
             </form>
         </div>
     </div>
 
     <script>
-        function abrirModal(id) { document.getElementById(id).style.display = "flex"; }
-        function fecharModal(id) { document.getElementById(id).style.display = "none"; }
-        window.onclick = function(e) { if(e.target.className === "modal") e.target.style.display = "none"; }
+        // Disponibiliza o status de atualização para o JS exibir o alerta de sucesso
+        window.PERFIL_ATUALIZADO = <?php echo isset($_GET['atualizado']) ? 'true' : 'false'; ?>;
     </script>
+    <script src="../js/perfil.js" defer></script>
 </body>
-</html> -->
+
+</html>
