@@ -1,9 +1,15 @@
 <?php
 
-$host = $_ENV['DB_HOST'] ?? '127.0.0.1';
-$user = $_ENV['DB_USERNAME'] ?? 'usuario';
-$pass = $_ENV['DB_PASSWORD'] ?? 'senha123';
-$db   = $_ENV['DB_DATABASE'] ?? 'db_casadacrianca';
+// $host = 'mysql';
+// $user = 'app';
+// $pass = 'app123';
+// $db   = 'casadacrianca';
+// $port = 3306;
+
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$user = $_ENV['DB_USER'] ?? 'root';
+$pass = $_ENV['DB_PASS'] ?? '';
+$db   = $_ENV['DB_NAME'] ?? 'db_casadacrianca';
 $port = $_ENV['DB_PORT'] ?? '3306';
 
 $conn = mysqli_connect($host, $user, $pass, $db, $port);
